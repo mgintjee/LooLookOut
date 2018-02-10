@@ -121,19 +121,6 @@ public class mainActivity extends AppCompatActivity
         mapFragment.getMapAsync(this);
     }
 
-    /**
-     * Saves the state of the map when the activity is paused.
-     */
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        if (mMap != null) {
-            outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
-            outState.putParcelable(KEY_LOCATION, mLastKnownLocation);
-            super.onSaveInstanceState(outState);
-        }
-    }
-
-
     // My Code
     private void addMarker( String Info ){
         int genderIndex, sizeIndex, cleanIndex, trafficIndex, accessIndex, closingIndex, amenityCount;
@@ -349,5 +336,13 @@ public class mainActivity extends AppCompatActivity
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
 
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (mMap != null) {
+            outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
+            outState.putParcelable(KEY_LOCATION, mLastKnownLocation);
+            super.onSaveInstanceState(outState);
+        }
     }
 }
