@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">LooLookOut</string>
+    <string name="defaultText">ew</string>
+
+    <string name="my_google_maps_key">AIzaSyAen9NzPj2xYZtK1EUVBBpEmMIQLq5S85M"</string>
+
+    <string name="email">CS125LooLookOut@gmail.com</string>
+    <string name="pw">NextGenerationSearchSystems</string>
+
+    <string name="gender">Gender</string>
+    <string name="size">Size</string>
+    <string name="traffic">Traffic</string>
+    <string name="access">Access</string>
+    <string name="closing">Closing Hours</string>
+    <string name="amenities">Amenities</string>
+
+    <string name="spacer">:</string>
+
+    <string name="minimize">Minimize Window</string>
+    <string name="clear">Clear Filters</string>
+
+    <string name="none">N/A</string>
+
+    <string name="inclusive">Inclusive</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="family">Family</string>
+
+    <string name="single">Single</string>
+    <string name="small">Small</string>
+    <string name="medium">Medium</string>
+    <string name="large">Large</string>
+
+    <string name="clean">Clean</string>
+    <string name="dirty">Dirty</string>
+
+    <string name="low">Low</string>
+    <string name="some">Some</string>
+    <string name="high">High</string>
+
+    <string name="publicUse">Public</string>
+    <string name="customerUse">Customer Only</string>
+    <string name="privateUse">Private</string>
+
+    <string name="diaper">Diaper Changing Station</string>
+    <string name="condom">Condom Dispenser</string>
+    <string name="tampon">Female Hygiene Dispenser</string>
+</resources>
