@@ -26,10 +26,10 @@
     <string name="female">Female</string>
     <string name="family">Family</string>
 
-    <string name="single">Single</string>
-    <string name="small">Small</string>
-    <string name="medium">Medium</string>
-    <string name="large">Large</string>
+    <string name="single">Single\n(T=1)</string>
+    <string name="small">Small\n(1&lt;T&lt;3)</string>
+    <string name="medium">Medium\n(3&lt;T&lt;6)</string>
+    <string name="large">Large\n(6&lt;T)</string>
 
     <string name="clean">Clean</string>
     <string name="dirty">Dirty</string>
@@ -46,8 +46,8 @@
     <string name="condom">Condom Dispenser</string>
     <string name="tampon">Female Hygiene Dispenser</string>
 
-    <string name="required">Required Features:\n</string>
-    <string name="optional">Optional Features:\n</string>
+    <string name="required">Required Features:</string>
+    <string name="optional">Optional Features:</string>
 
     <string name="location">Your Location</string>
     <string name="cancel">Cancel Report</string>

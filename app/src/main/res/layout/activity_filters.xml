@@ -186,41 +186,20 @@
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
-                <RadioGroup
-                    android:id="@+id/Filter_rG_Clean"
+                <TextView
+                    android:id="@+id/Filter_tV_Clean"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:checkedButton="@+id/Filter_rB_NA_clean"
-                    android:orientation="horizontal">
+                    android:text="@string/none"
+                    android:textSize="14sp" />
 
-                    <RadioButton
-                        android:id="@+id/Filter_rB_NA_clean"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="@string/none"
-                        android:textAlignment="textStart"
-                        android:textSize="14sp" />
-
-                    <RadioButton
-                        android:id="@+id/Filter_rB_Clean"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="@string/clean"
-                        android:textAlignment="textStart"
-                        android:textSize="14sp" />
-
-                    <RadioButton
-                        android:id="@+id/Filter_rB_Dirty"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="@string/dirty"
-                        android:textAlignment="textStart"
-                        android:textSize="14sp" />
-
-                </RadioGroup>
+                <SeekBar
+                    android:id="@+id/Filter_sB_Clean"
+                    style="@style/Widget.AppCompat.SeekBar.Discrete"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="5"
+                    android:progress="0" />
 
             </LinearLayout>
 
@@ -388,9 +367,11 @@
 
     <Button
         android:id="@+id/Filter_b_Minimize"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:background="@color/cast_intro_overlay_button_background_color"
         android:text="@string/minimize" />
 
 </RelativeLayout>

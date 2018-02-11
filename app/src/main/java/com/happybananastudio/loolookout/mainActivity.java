@@ -43,7 +43,7 @@ public class mainActivity extends AppCompatActivity
     private final ArrayList<String> possibleSize = new ArrayList<>(
             Arrays.asList("N/A", "Single", "Small", "Medium", "Large" ));
     private final ArrayList<String> possibleCleanliness = new ArrayList<>(
-            Arrays.asList("N/A", "Clean", "Dirty" ));
+            Arrays.asList("N/A", "0", "1", "2", "3", "4", "5" ));
     private final ArrayList<String> possibleTraffic = new ArrayList<>(
             Arrays.asList("N/A", "Low",  "Some", "High"  ));
     private final ArrayList<String> possibleAccess = new ArrayList<>(

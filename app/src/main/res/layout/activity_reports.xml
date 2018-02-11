@@ -239,41 +239,21 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                        <RadioGroup
-                            android:id="@+id/Report_rG_Clean"
+                        <TextView
+                            android:id="@+id/Report_tV_Clean"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:checkedButton="@+id/Report_rB_NA_clean"
-                            android:orientation="horizontal">
+                            android:text="@string/none"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_NA_clean"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/none"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
-
-                            <RadioButton
-                                android:id="@+id/Report_rB_Clean"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/clean"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
-
-                            <RadioButton
-                                android:id="@+id/Report_rB_Dirty"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/dirty"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
-
-                        </RadioGroup>
+                        <SeekBar
+                            android:id="@+id/Report_sB_Clean"
+                            style="@style/Widget.AppCompat.SeekBar.Discrete"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:max="5"
+                            android:progress="0" />
 
                     </LinearLayout>
 
@@ -449,19 +429,31 @@
         android:layout_alignParentBottom="true">
 
         <Button
-            style="@style/Widget.AppCompat.Button.Borderless"
             android:id="@+id/Report_b_Cancel"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@color/cast_intro_overlay_button_background_color"
             android:text="@string/cancel" />
 
         <Button
+            android:id="@+id/Report_FooterSpacer"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:id="@+id/Report_b_Send"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@color/cast_intro_overlay_button_background_color"
+            android:text="@string/send"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/Report_b_Send"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/cast_intro_overlay_button_background_color"
             android:text="@string/send" />
     </LinearLayout>
 </RelativeLayout>

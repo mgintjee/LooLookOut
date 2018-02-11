@@ -48,6 +48,7 @@ public class reportActivity extends Activity {
                 Intent intent = new Intent();
 
                 setResult(RESULT_CANCELED, intent);
+                toastThis("Cancelling Report");
                 finish();
                 overridePendingTransition(0, 0);
             }
@@ -58,6 +59,7 @@ public class reportActivity extends Activity {
                 Intent intent = new Intent();
 
                 setResult(RESULT_OK, intent);
+                toastThis("Sending Report");
                 finish();
                 overridePendingTransition(0, 0);
             }

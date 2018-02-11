@@ -13,11 +13,16 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class filtersActivity extends Activity {
+    private final ArrayList<String> possibleClean = new ArrayList<>(
+            Arrays.asList("N/A", "Very Dirty", "Dirty", "Neutral", "Clean", "Very Clean" ));
     private int gender = 0, size = 0, clean = 0, traffic = 0, access = 0;
     private ArrayList<Integer> amenities = new ArrayList<>();
     Context thisContext = this;
@@ -35,7 +40,7 @@ public class filtersActivity extends Activity {
         handleMinimizeButton();
         handleGenderRadioGroup();
         handleSizeRadioGroup();
-        handleCleanRadioGroup();
+        handleCleanSeekBar();
         handleTrafficRadioGroup();
         handleAccessRadioGroup();
         handleCheckBoxes();
@@ -78,7 +83,7 @@ public class filtersActivity extends Activity {
             public void onClick(View v) {
                 RadioGroup genderGroup = (RadioGroup) findViewById(R.id.Filter_rG_Gender);
                 RadioGroup sizeGroup = (RadioGroup) findViewById(R.id.Filter_rG_Size);
-                RadioGroup cleanGroup = (RadioGroup) findViewById(R.id.Filter_rG_Clean);
+                SeekBar cleanSeekBar = (SeekBar) findViewById(R.id.Filter_sB_Clean);
                 RadioGroup trafficGroup = (RadioGroup) findViewById(R.id.Filter_rG_Traffic);
                 RadioGroup accessGroup = (RadioGroup) findViewById(R.id.Filter_rG_Access);
                 CheckBox diaper = (CheckBox) findViewById(R.id.Filter_cB_Diaper);
@@ -87,7 +92,7 @@ public class filtersActivity extends Activity {
 
                 genderGroup.check(R.id.Filter_rB_NA_gender);
                 sizeGroup.check(R.id.Filter_rB_NA_size);
-                cleanGroup.check(R.id.Filter_rB_NA_clean);
+                cleanSeekBar.setProgress(0);
                 trafficGroup.check(R.id.Filter_rB_NA_traffic);
                 accessGroup.check(R.id.Filter_rB_NA_access);
 
@@ -123,14 +128,21 @@ public class filtersActivity extends Activity {
             }
         });
     }
-    private void handleCleanRadioGroup(){
-        final RadioGroup cleanGroup = (RadioGroup) findViewById(R.id.Filter_rG_Clean);
-        cleanGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+    private void handleCleanSeekBar(){
+        final SeekBar cleanSeekBar = (SeekBar) findViewById(R.id.Filter_sB_Clean);
+        cleanSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                RadioButton checkedButton = (RadioButton) findViewById(checkedId);
-                clean = cleanGroup.indexOfChild(checkedButton);
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                TextView tVClean = (TextView) findViewById(R.id.Filter_tV_Clean);
+                tVClean.setText(possibleClean.get(progress));
+                clean = progress;
             }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
     }
     private void handleTrafficRadioGroup(){
