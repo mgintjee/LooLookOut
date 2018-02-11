@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/header"
+        android:id="@+id/Filter_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -19,10 +18,10 @@
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
-            android:src="@drawable/filters_banner"/>
+            android:src="@drawable/filters_banner" />
 
         <Button
-            android:id="@+id/b_ClearFilters"
+            android:id="@+id/Filter_b_ClearFilters"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -33,7 +32,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/header">
+        android:layout_below="@id/Filter_header"
+        android:layout_above="@id/Filter_b_Minimize">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -53,14 +53,14 @@
                     android:textStyle="bold" />
 
                 <RadioGroup
-                    android:id="@+id/rG_Gender"
+                    android:id="@+id/Filter_rG_Gender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:checkedButton="@+id/NA_gender"
+                    android:checkedButton="@+id/Filter_rB_NA_gender"
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/NA_gender"
+                        android:id="@+id/Filter_rB_NA_gender"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -69,7 +69,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Inclusive"
+                        android:id="@+id/Filter_rB_Inclusive"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -78,7 +78,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Male"
+                        android:id="@+id/Filter_rB_Male"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -87,7 +87,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Female"
+                        android:id="@+id/Filter_rB_Female"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -96,7 +96,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Family"
+                        android:id="@+id/Filter_rB_Family"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -120,14 +120,14 @@
                     android:textStyle="bold" />
 
                 <RadioGroup
-                    android:id="@+id/rG_Size"
+                    android:id="@+id/Filter_rG_Size"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:checkedButton="@+id/NA_size"
+                    android:checkedButton="@+id/Filter_rB_NA_size"
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/NA_size"
+                        android:id="@+id/Filter_rB_NA_size"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -136,7 +136,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Single"
+                        android:id="@+id/Filter_rB_Single"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -145,7 +145,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Small"
+                        android:id="@+id/Filter_rB_Small"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -154,7 +154,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Medium"
+                        android:id="@+id/Filter_rB_Medium"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -163,7 +163,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Large"
+                        android:id="@+id/Filter_rB_Large"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -187,14 +187,14 @@
                     android:textStyle="bold" />
 
                 <RadioGroup
-                    android:id="@+id/rG_Clean"
+                    android:id="@+id/Filter_rG_Clean"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:checkedButton="@+id/NA_clean"
+                    android:checkedButton="@+id/Filter_rB_NA_clean"
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/NA_clean"
+                        android:id="@+id/Filter_rB_NA_clean"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -203,7 +203,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Clean"
+                        android:id="@+id/Filter_rB_Clean"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -212,7 +212,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Dirty"
+                        android:id="@+id/Filter_rB_Dirty"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -237,14 +237,14 @@
                     android:textStyle="bold" />
 
                 <RadioGroup
-                    android:id="@+id/rG_Traffic"
+                    android:id="@+id/Filter_rG_Traffic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:checkedButton="@+id/NA_traffic"
+                    android:checkedButton="@+id/Filter_rB_NA_traffic"
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/NA_traffic"
+                        android:id="@+id/Filter_rB_NA_traffic"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -253,7 +253,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Low"
+                        android:id="@+id/Filter_rB_Low"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -262,7 +262,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Some"
+                        android:id="@+id/Filter_rB_Some"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -271,7 +271,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/High"
+                        android:id="@+id/Filter_rB_High"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -296,14 +296,14 @@
                     android:textStyle="bold" />
 
                 <RadioGroup
-                    android:id="@+id/rG_Access"
+                    android:id="@+id/Filter_rG_Access"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:checkedButton="@+id/NA_access"
+                    android:checkedButton="@+id/Filter_rB_NA_access"
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/NA_access"
+                        android:id="@+id/Filter_rB_NA_access"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -312,7 +312,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Public"
+                        android:id="@+id/Filter_rB_Public"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -321,7 +321,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Customer_Only"
+                        android:id="@+id/Filter_rB_Customer_Only"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -330,7 +330,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
-                        android:id="@+id/Private"
+                        android:id="@+id/Filter_rB_Private"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -360,21 +360,21 @@
                     android:orientation="horizontal">
 
                     <CheckBox
-                        android:id="@+id/cB_Diaper"
+                        android:id="@+id/Filter_cB_Diaper"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/diaper" />
 
                     <CheckBox
-                        android:id="@+id/cB_Condom"
+                        android:id="@+id/Filter_cB_Condom"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/condom" />
 
                     <CheckBox
-                        android:id="@+id/cB_Tampon"
+                        android:id="@+id/Filter_cB_Tampon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -387,7 +387,7 @@
     </ScrollView>
 
     <Button
-        android:id="@+id/b_Minimize"
+        android:id="@+id/Filter_b_Minimize"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

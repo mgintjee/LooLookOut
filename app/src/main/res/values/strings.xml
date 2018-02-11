@@ -45,4 +45,11 @@
     <string name="diaper">Diaper Changing Station</string>
     <string name="condom">Condom Dispenser</string>
     <string name="tampon">Female Hygiene Dispenser</string>
+
+    <string name="required">Required Features:\n</string>
+    <string name="optional">Optional Features:\n</string>
+
+    <string name="location">Your Location</string>
+    <string name="cancel">Cancel Report</string>
+    <string name="send">Send Report</string>
 </resources>

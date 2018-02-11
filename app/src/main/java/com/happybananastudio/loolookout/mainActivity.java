@@ -93,6 +93,7 @@ public class mainActivity extends AppCompatActivity
     private final int INCLUSIVE = 0;
 
     private final int FILTERS_ACTIVITY = 1;
+    private final int REPORT_ACTIVITY = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,9 +210,6 @@ public class mainActivity extends AppCompatActivity
         iBReport = (ImageButton) findViewById(R.id.iBReport);
         iBTemp = (ImageButton) findViewById(R.id.iBTemp);
         iBRefresh = (ImageButton) findViewById(R.id.iBRefresh);
-        if( iBFilter == null ) {
-            Log.d("Debug", "filter is broked");
-        }
     }
     private void setImageButtonListeners(){
 
@@ -222,6 +220,18 @@ public class mainActivity extends AppCompatActivity
 
                 Intent intent = new Intent(thisContext, filtersActivity.class);
                 startActivityForResult(intent, FILTERS_ACTIVITY);
+            }
+        });
+        iBReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toastThis("Reporting Restroom");
+
+                Intent intent = new Intent(thisContext, reportActivity.class);
+                intent.putExtra("lat", mLastKnownLocation.getLatitude());
+                intent.putExtra("lng", mLastKnownLocation.getLongitude());
+                startActivityForResult(intent, REPORT_ACTIVITY);
+
             }
         });
     }
