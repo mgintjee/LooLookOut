@@ -52,4 +52,11 @@
     <string name="location">Your Location</string>
     <string name="cancel">Cancel Report</string>
     <string name="send">Send Report</string>
+
+    <string name="about">
+        >Team:
+        \n
+    </string>
+
+
 </resources>

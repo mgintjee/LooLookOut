@@ -208,8 +208,6 @@ public class mainActivity extends AppCompatActivity
         iBSettings = (ImageButton) findViewById(R.id.iBSettings);
         iBFilter = (ImageButton) this.findViewById(R.id.iBFilter);
         iBReport = (ImageButton) findViewById(R.id.iBReport);
-        iBTemp = (ImageButton) findViewById(R.id.iBTemp);
-        iBRefresh = (ImageButton) findViewById(R.id.iBRefresh);
     }
     private void setImageButtonListeners(){
 
