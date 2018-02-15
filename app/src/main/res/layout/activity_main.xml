@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.happybananastudio.loolookout.mainActivity">
+    tools:context="com.happybananastudio.loolookout.mainActivity"
+    android:background="@color/black">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:adjustViewBounds="true"
-            android:background="@color/colorAccent"
+            android:background="@color/teal"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/filter" />
 
@@ -64,7 +65,7 @@
             android:background="@color/colorAccent"
             android:scaleType="fitXY"
             android:visibility="invisible"
-            app:srcCompat="@drawable/achievements" />
+            app:srcCompat="@drawable/addtoilet" />
 
         <ImageButton
             android:id="@+id/iBReport"
@@ -72,9 +73,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:adjustViewBounds="true"
-            android:background="@color/colorAccent"
+            android:background="@color/teal"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/report" />
+            app:srcCompat="@drawable/addtoilet" />
 
         <ImageButton
             android:id="@+id/Main_FooterSpacer1"
@@ -85,7 +86,7 @@
             android:background="@color/colorAccent"
             android:scaleType="fitXY"
             android:visibility="invisible"
-            app:srcCompat="@drawable/refresh" />
+            app:srcCompat="@drawable/addtoilet" />
 
         <ImageButton
             android:id="@+id/iBSettings"
@@ -93,9 +94,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:adjustViewBounds="true"
-            android:background="@color/colorAccent"
+            android:background="@color/teal"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/settings" />
+            app:srcCompat="@drawable/gear" />
 
     </LinearLayout>
 
