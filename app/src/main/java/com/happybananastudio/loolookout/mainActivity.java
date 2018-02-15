@@ -3,6 +3,8 @@ package com.happybananastudio.loolookout;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -129,11 +131,12 @@ public class MainActivity extends AppCompatActivity
         StringBuilder amenities = new StringBuilder("");
         LatLng latLng;
         double lat, lng;
-        float hue;
+        String iconName;
         String[] infoParts = Info.split(":");
         for( int i = 0; i < infoParts.length; ++i ){
             Log.d("debug", Integer.toString(i) + " " + infoParts[i]);
         }
+
         lat = Double.parseDouble(infoParts[0].split(",")[0]);
         lng = Double.parseDouble(infoParts[0].split(",")[1]);
 
@@ -182,25 +185,25 @@ public class MainActivity extends AppCompatActivity
 
         switch (genderIndex){
             case INCLUSIVE:
-                hue = BitmapDescriptorFactory.HUE_BLUE;
+                iconName = "pin_inclusive";
                 break;
             case MALE:
-                hue = BitmapDescriptorFactory.HUE_AZURE;
+                iconName = "pin_male";
                 break;
             case FEMALE:
-                hue = BitmapDescriptorFactory.HUE_ROSE;
+                iconName = "pin_female";
                 break;
             case FAMILY:
-                hue = BitmapDescriptorFactory.HUE_YELLOW;
+                iconName = "pin_inclusive";
                 break;
             default:
-                hue = BitmapDescriptorFactory.HUE_GREEN;
+                iconName = "pin";
         }
 
         MarkerOptions newMarker = new MarkerOptions()
                 .position(latLng)
-                .icon(BitmapDescriptorFactory
-                        .defaultMarker(hue));
+                .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(iconName,150,150)));
+
         Marker m  = mMap.addMarker(newMarker);
         m.setTag(info);
     }
@@ -239,6 +242,11 @@ public class MainActivity extends AppCompatActivity
                 Toast.LENGTH_SHORT).show();
     }
 
+    public Bitmap resizeMapIcons(String iconName,int width, int height){
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+        return resizedBitmap;
+    }
 
     // The Original Code From The Template
     private void getDeviceLocation() {
@@ -258,7 +266,11 @@ public class MainActivity extends AppCompatActivity
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                            addMarker( Double.toString(mLastKnownLocation.getLatitude())+","+Double.toString(mLastKnownLocation.getLongitude()) + "1:1:1:1:1:1:1:0");
+
+                            addMarker( Double.toString(mLastKnownLocation.getLatitude())+","+Double.toString(mLastKnownLocation.getLongitude()) + ":0:1:1:1:1:1:1:0");
+                            addMarker( Double.toString(mLastKnownLocation.getLatitude()+0.01)+","+Double.toString(mLastKnownLocation.getLongitude()) + ":1:1:1:1:1:1:1:0");
+                            addMarker( Double.toString(mLastKnownLocation.getLatitude()-0.01)+","+Double.toString(mLastKnownLocation.getLongitude()) + ":2:1:1:1:1:1:1:0");
+                            addMarker( Double.toString(mLastKnownLocation.getLatitude())+","+Double.toString(mLastKnownLocation.getLongitude()+0.01) + ":3:1:1:1:1:1:1:0");
 
                         }
                         else {
