@@ -52,4 +52,25 @@
     <string name="location">Your Location</string>
     <string name="cancel">Cancel Report</string>
     <string name="send">Send Report</string>
+
+    <string name="aboutTeam">
+        >Team:
+        \n->Ted Celis:
+        \n->Matthew Gintjee:
+        \n->Vinson Han:
+        \n->Hoang Nguyen:
+    </string>
+
+    <string name="aboutApp">
+        >App Background
+    </string>
+    <string name="aboutTeamHeader">
+        >About The Team:
+    </string>
+
+    <string name="aboutAppHeader">
+        >About This App:
+    </string>
+
+
 </resources>

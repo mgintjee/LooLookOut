@@ -46,16 +46,6 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/iBSettings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:background="@color/colorAccent"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/settings" />
-
-        <ImageButton
             android:id="@+id/iBFilter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -64,6 +54,17 @@
             android:background="@color/colorAccent"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/filter" />
+
+        <ImageButton
+            android:id="@+id/Main_FooterSpacer0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:background="@color/colorAccent"
+            android:scaleType="fitXY"
+            android:visibility="invisible"
+            app:srcCompat="@drawable/achievements" />
 
         <ImageButton
             android:id="@+id/iBReport"
@@ -76,24 +77,26 @@
             app:srcCompat="@drawable/report" />
 
         <ImageButton
-            android:id="@+id/iBTemp"
+            android:id="@+id/Main_FooterSpacer1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:background="@color/colorAccent"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/achievements" />
+            android:visibility="invisible"
+            app:srcCompat="@drawable/refresh" />
 
         <ImageButton
-            android:id="@+id/iBRefresh"
+            android:id="@+id/iBSettings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:background="@color/colorAccent"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/refresh" />
+            app:srcCompat="@drawable/settings" />
+
     </LinearLayout>
 
 

@@ -20,7 +20,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class filtersActivity extends Activity {
+public class FiltersActivity extends Activity {
     private final ArrayList<String> possibleClean = new ArrayList<>(
             Arrays.asList("N/A", "Very Dirty", "Dirty", "Neutral", "Clean", "Very Clean" ));
     private int gender = 0, size = 0, clean = 0, traffic = 0, access = 0;

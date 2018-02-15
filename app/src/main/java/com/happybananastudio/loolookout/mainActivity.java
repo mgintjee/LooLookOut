@@ -36,7 +36,7 @@ import com.google.android.gms.tasks.Task;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class mainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity
         implements OnMapReadyCallback {
     private final ArrayList<String> possibleGender = new ArrayList<>(
             Arrays.asList("Inclusive", "Male", "Female", "Family" ));
@@ -60,7 +60,7 @@ public class mainActivity extends AppCompatActivity
 
     Context thisContext = this;
 
-    private static final String TAG = mainActivity.class.getSimpleName();
+    private static final String TAG = MainActivity.class.getSimpleName();
     private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
     private CameraPosition mCameraPosition;
@@ -208,8 +208,6 @@ public class mainActivity extends AppCompatActivity
         iBSettings = (ImageButton) findViewById(R.id.iBSettings);
         iBFilter = (ImageButton) this.findViewById(R.id.iBFilter);
         iBReport = (ImageButton) findViewById(R.id.iBReport);
-        iBTemp = (ImageButton) findViewById(R.id.iBTemp);
-        iBRefresh = (ImageButton) findViewById(R.id.iBRefresh);
     }
     private void setImageButtonListeners(){
 
@@ -218,7 +216,7 @@ public class mainActivity extends AppCompatActivity
             public void onClick(View v) {
                 toastThis("Editing Filters");
 
-                Intent intent = new Intent(thisContext, filtersActivity.class);
+                Intent intent = new Intent(thisContext, FiltersActivity.class);
                 startActivityForResult(intent, FILTERS_ACTIVITY);
             }
         });
@@ -227,7 +225,7 @@ public class mainActivity extends AppCompatActivity
             public void onClick(View v) {
                 toastThis("Reporting Restroom");
 
-                Intent intent = new Intent(thisContext, reportActivity.class);
+                Intent intent = new Intent(thisContext, ReportActivity.class);
                 intent.putExtra("lat", mLastKnownLocation.getLatitude());
                 intent.putExtra("lng", mLastKnownLocation.getLongitude());
                 startActivityForResult(intent, REPORT_ACTIVITY);

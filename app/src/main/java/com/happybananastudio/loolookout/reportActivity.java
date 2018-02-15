@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class reportActivity extends Activity {
+public class ReportActivity extends Activity {
     Context thisContext = this;
     private LatLng latLng;
 
