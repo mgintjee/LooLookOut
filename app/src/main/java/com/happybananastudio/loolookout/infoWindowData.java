@@ -2,8 +2,6 @@ package com.happybananastudio.loolookout;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.ArrayList;
-
 /**
  * Created by mgint on 2/9/2018.
  */

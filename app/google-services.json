@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "270280278364",
+    "firebase_url": "https://loolookout-1516761649278.firebaseio.com",
+    "project_id": "loolookout-1516761649278",
+    "storage_bucket": "loolookout-1516761649278.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:270280278364:android:7b9fa8e883663b4b",
+        "android_client_info": {
+          "package_name": "com.happybananastudio.loolookout"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "270280278364-l7ihmu4j7ppkbudrgvlirc2itf7amhf3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAq9vqtrOkjPdTm96uujLXYSOusiDMvWw8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

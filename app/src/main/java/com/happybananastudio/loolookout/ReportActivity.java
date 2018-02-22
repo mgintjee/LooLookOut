@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.os.Debug;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -15,8 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 import java.util.Locale;
@@ -41,7 +37,7 @@ public class ReportActivity extends Activity {
             double lng = b.getDouble("lng");
             String zipCode = getZipCode(lat, lng);
             latLng = new LatLng(lat, lng);
-            String tVContent = "Zipcode: " + zipCode + "\n" + latLng.toString();
+            String tVContent = "Zip Code: " + zipCode + "\n" + latLng.toString();
             TextView tVLocation = (TextView) findViewById(R.id.Report_tV_Location);
             tVLocation.setText(tVContent);
         }
@@ -94,7 +90,6 @@ public class ReportActivity extends Activity {
             zipCode = addresses.get(0).getPostalCode();
         }
         catch (Exception e){
-            Log.d("CAUGHT CRASH", "IDK M8");
         }
         return zipCode;
     }
