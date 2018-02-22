@@ -3,6 +3,8 @@ package com.happybananastudio.loolookout;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
@@ -15,6 +17,9 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.List;
+import java.util.Locale;
 
 public class ReportActivity extends Activity {
     Context thisContext = this;
@@ -34,9 +39,11 @@ public class ReportActivity extends Activity {
         if( b != null ) {
             double lat = b.getDouble("lat");
             double lng = b.getDouble("lng");
+            String zipCode = getZipCode(lat, lng);
             latLng = new LatLng(lat, lng);
+            String tVContent = "Zipcode: " + zipCode + "\n" + latLng.toString();
             TextView tVLocation = (TextView) findViewById(R.id.Report_tV_Location);
-            tVLocation.setText(latLng.toString());
+            tVLocation.setText(tVContent);
         }
     }
     private void handleWidgets(){
@@ -77,35 +84,19 @@ public class ReportActivity extends Activity {
             }
         });
     }
+
     private String getZipCode(Double latitude, Double longitude)
-    {/*
-        String zipcode = null;
-        try
-        {
-            LatLng latLng = new LatLng();
-            latLng.setLat(BigDecimal.valueOf(latitude));
-            latLng.setLng(BigDecimal.valueOf(longitude));
-            final Geocoder geocoder = new Geocoder();
-            GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setLocation(latLng).getGeocoderRequest();
-            GeocodeResponse geocoderResponse = geocoder.geocode(geocoderRequest);
-            List<GeocoderResult> results = geocoderResponse.getResults();
-            logger.debug("results :  "+results); //This will print geographical information
-            List<GeocoderAddressComponent> geList= results.get(0).getAddressComponents();
-            if(geList.get(geList.size()-1).getTypes().get(0).trim().equalsIgnoreCase("postal&#95;code"))
-            {
-                zipcode = geList.get(geList.size()-1).getLongName();
-            }
-            else if(geList.get(0).getTypes().get(0).trim().equalsIgnoreCase("postal&#95;code"))
-            {
-                zipcode = geList.get(0).getLongName();
-            }
-            logger.debug("zipcode :  " + zipcode);
-        }catch (Exception e) {
-            logger.debug(e.toString());
-            logger.debug(e.getLocalizedMessage());
+    {
+        String zipCode = "";
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            zipCode = addresses.get(0).getPostalCode();
         }
-        */
-        return "";
+        catch (Exception e){
+            Log.d("CAUGHT CRASH", "IDK M8");
+        }
+        return zipCode;
     }
     private void toastThis(String message){
         Toast.makeText(thisContext,
