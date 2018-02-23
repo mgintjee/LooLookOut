@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
     private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
     private CameraPosition mCameraPosition;
-    private ImageButton iBSettings, iBFilter, iBReport, iBTemp, iBRefresh;
+    private ImageButton iBAbout, iBFilter, iBReport, iBTemp, iBRefresh;
     // The entry points to the Places API.
     private GeoDataClient mGeoDataClient;
     private PlaceDetectionClient mPlaceDetectionClient;
@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity
 
     private final int FILTERS_ACTIVITY = 1;
     private final int REPORT_ACTIVITY = 2;
+    private final int ABOUT_ACTIVITY = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,7 +195,7 @@ public class MainActivity extends AppCompatActivity
                 iconName = "pin_female";
                 break;
             case FAMILY:
-                iconName = "pin_inclusive";
+                iconName = "pin_family";
                 break;
             default:
                 iconName = "pin";
@@ -208,7 +209,7 @@ public class MainActivity extends AppCompatActivity
         m.setTag(info);
     }
     private void initializeImageButtons(){
-        iBSettings = (ImageButton) findViewById(R.id.iBSettings);
+        iBAbout = (ImageButton) findViewById(R.id.iBAbout);
         iBFilter = (ImageButton) this.findViewById(R.id.iBFilter);
         iBReport = (ImageButton) findViewById(R.id.iBReport);
     }
@@ -232,6 +233,16 @@ public class MainActivity extends AppCompatActivity
                 intent.putExtra("lat", mLastKnownLocation.getLatitude());
                 intent.putExtra("lng", mLastKnownLocation.getLongitude());
                 startActivityForResult(intent, REPORT_ACTIVITY);
+
+            }
+        });
+        iBAbout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toastThis("Reporting Restroom");
+
+                Intent intent = new Intent(thisContext, AboutActivity.class);
+                startActivityForResult(intent, ABOUT_ACTIVITY);
 
             }
         });

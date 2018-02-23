@@ -3,6 +3,8 @@ package com.happybananastudio.loolookout;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
@@ -15,6 +17,9 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.List;
+import java.util.Locale;
 
 public class ReportActivity extends Activity {
     Context thisContext = this;
@@ -35,8 +40,11 @@ public class ReportActivity extends Activity {
             double lat = b.getDouble("lat");
             double lng = b.getDouble("lng");
             latLng = new LatLng(lat, lng);
+            String zipCode = getZipCode(lat, lng);
+            latLng = new LatLng(lat, lng);
+            String tVContent = "Zip Code: " + zipCode + "\n" + latLng.toString();
             TextView tVLocation = (TextView) findViewById(R.id.Report_tV_Location);
-            tVLocation.setText(latLng.toString());
+            tVLocation.setText(tVContent);
         }
     }
     private void handleWidgets(){
@@ -78,7 +86,17 @@ public class ReportActivity extends Activity {
         });
     }
     private String getZipCode(Double latitude, Double longitude)
-    {/*
+    {
+        String zipCode = "";
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            zipCode = addresses.get(0).getPostalCode();
+        }
+        catch (Exception e){
+        }
+        return zipCode;
+        /*
         String zipcode = null;
         try
         {
@@ -105,7 +123,6 @@ public class ReportActivity extends Activity {
             logger.debug(e.getLocalizedMessage());
         }
         */
-        return "";
     }
     private void toastThis(String message){
         Toast.makeText(thisContext,

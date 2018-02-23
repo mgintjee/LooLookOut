@@ -89,7 +89,7 @@
             app:srcCompat="@drawable/addtoilet" />
 
         <ImageButton
-            android:id="@+id/iBSettings"
+            android:id="@+id/iBAbout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
