@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.os.Debug;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -15,8 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 import java.util.Locale;
@@ -39,7 +35,6 @@ public class ReportActivity extends Activity {
         if( b != null ) {
             double lat = b.getDouble("lat");
             double lng = b.getDouble("lng");
-            latLng = new LatLng(lat, lng);
             String zipCode = getZipCode(lat, lng);
             latLng = new LatLng(lat, lng);
             String tVContent = "Zip Code: " + zipCode + "\n" + latLng.toString();
@@ -85,6 +80,7 @@ public class ReportActivity extends Activity {
             }
         });
     }
+
     private String getZipCode(Double latitude, Double longitude)
     {
         String zipCode = "";
@@ -96,33 +92,6 @@ public class ReportActivity extends Activity {
         catch (Exception e){
         }
         return zipCode;
-        /*
-        String zipcode = null;
-        try
-        {
-            LatLng latLng = new LatLng();
-            latLng.setLat(BigDecimal.valueOf(latitude));
-            latLng.setLng(BigDecimal.valueOf(longitude));
-            final Geocoder geocoder = new Geocoder();
-            GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setLocation(latLng).getGeocoderRequest();
-            GeocodeResponse geocoderResponse = geocoder.geocode(geocoderRequest);
-            List<GeocoderResult> results = geocoderResponse.getResults();
-            logger.debug("results :  "+results); //This will print geographical information
-            List<GeocoderAddressComponent> geList= results.get(0).getAddressComponents();
-            if(geList.get(geList.size()-1).getTypes().get(0).trim().equalsIgnoreCase("postal&#95;code"))
-            {
-                zipcode = geList.get(geList.size()-1).getLongName();
-            }
-            else if(geList.get(0).getTypes().get(0).trim().equalsIgnoreCase("postal&#95;code"))
-            {
-                zipcode = geList.get(0).getLongName();
-            }
-            logger.debug("zipcode :  " + zipcode);
-        }catch (Exception e) {
-            logger.debug(e.toString());
-            logger.debug(e.getLocalizedMessage());
-        }
-        */
     }
     private void toastThis(String message){
         Toast.makeText(thisContext,
