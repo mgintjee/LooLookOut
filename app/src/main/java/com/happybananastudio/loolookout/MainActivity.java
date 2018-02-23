@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity
                             "12:00 am","1:00 am","2:00 am","3:00 am","4:00 am","5:00 am",
                             "6:00 am","7:00 am","8:00 am","9:00 am","10:00 am","11:00 am",
                             "12:00 pm","1:00 pm","2:00 pm","3:00 pm","4:00 pm","5:00 pm",
-                            "6:00 pm","7:00 pm","8:00 pm","9:00 pm","10:00 pm","11:00 pm"                         ));
+                            "6:00 pm","7:00 pm","8:00 pm","9:00 pm","10:00 pm","11:00 pm"));
 
 
     Context thisContext = this;
@@ -133,10 +133,11 @@ public class MainActivity extends AppCompatActivity
         double lat, lng;
         String iconName;
         String[] infoParts = Info.split(":");
+        /*
         for( int i = 0; i < infoParts.length; ++i ){
             Log.d("debug", Integer.toString(i) + " " + infoParts[i]);
         }
-
+        */
         lat = Double.parseDouble(infoParts[0].split(",")[0]);
         lng = Double.parseDouble(infoParts[0].split(",")[1]);
 
@@ -149,7 +150,7 @@ public class MainActivity extends AppCompatActivity
         trafficIndex = Integer.valueOf(infoParts[4]);
         accessIndex = Integer.valueOf(infoParts[5]);
         closingIndex = Integer.valueOf(infoParts[6]);
-        amenitiesIndices = infoParts[7];
+        amenitiesIndices = infoParts[8];
 
         gender = possibleGender.get(genderIndex);
         size = possibleSize.get(sizeIndex);
@@ -158,11 +159,13 @@ public class MainActivity extends AppCompatActivity
         access = possibleAccess.get(accessIndex);
         closing = possibleClosing.get(closingIndex);
         String[] amenityParts = amenitiesIndices.split(",");
+        Log.d("Amenitiy Size:", String.valueOf(amenityParts.length));
 
         for( int i = 0; i < amenityParts.length - 1; ++i){
+            Log.d("Amenitiy:", possibleAmenity.get(Integer.valueOf(amenityParts[i])));
             amenities.append(possibleAmenity.get(Integer.valueOf(amenityParts[i]))).append(",\n");
         }
-        amenities.append(possibleAmenity.get(Integer.valueOf(amenityParts[amenityParts.length - 1])));
+        amenities.append(possibleAmenity.get(Integer.valueOf(amenityParts[amenityParts.length - 1]))).append((amenityParts.length == 1 )?"":"\n");
 
         amenityCount = amenityParts.length;
 
@@ -277,7 +280,7 @@ public class MainActivity extends AppCompatActivity
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
 
-                            addMarker( Double.toString(mLastKnownLocation.getLatitude())+","+Double.toString(mLastKnownLocation.getLongitude()) + ":0:1:1:1:1:1:1:0");
+                            addMarker( Double.toString(mLastKnownLocation.getLatitude())+","+Double.toString(mLastKnownLocation.getLongitude()) + ":0:0:0:0:0:0:0:0");
                             addMarker( Double.toString(mLastKnownLocation.getLatitude()+0.01)+","+Double.toString(mLastKnownLocation.getLongitude()) + ":1:1:1:1:1:1:1:0");
                             addMarker( Double.toString(mLastKnownLocation.getLatitude()-0.01)+","+Double.toString(mLastKnownLocation.getLongitude()) + ":2:1:1:1:1:1:1:0");
                             addMarker( Double.toString(mLastKnownLocation.getLatitude())+","+Double.toString(mLastKnownLocation.getLongitude()+0.01) + ":3:1:1:1:1:1:1:0");

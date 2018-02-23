@@ -4,9 +4,6 @@
 
     <string name="my_google_maps_key">AIzaSyAen9NzPj2xYZtK1EUVBBpEmMIQLq5S85M"</string>
 
-    <string name="email">CS125LooLookOut@gmail.com</string>
-    <string name="pw">NextGenerationSearchSystems</string>
-
     <string name="gender">Gender</string>
     <string name="size">Size</string>
     <string name="traffic">Traffic</string>
@@ -27,8 +24,8 @@
     <string name="family">Family</string>
 
     <string name="single">Single\n(T=1)</string>
-    <string name="small">Small\n(1&lt;T&lt;3)</string>
-    <string name="medium">Medium\n(3&lt;T&lt;6)</string>
+    <string name="small">Small\n(T&lt;3)</string>
+    <string name="medium">Med.\n(T&lt;6)</string>
     <string name="large">Large\n(6&lt;T)</string>
 
     <string name="clean">Clean</string>
@@ -54,22 +51,23 @@
     <string name="send">Send Report</string>
 
     <string name="aboutTeam">
-        >Team:
-        \n->Ted Celis:
-        \n->Matthew Gintjee:
-        \n->Vinson Han:
-        \n->Hoang Nguyen:
+        > Team:
+        \n-> Ted Celis: JSON Stuff
+        \n-> Matthew Gintjee: Android Coding
+        \n-> Vinson Han: Databases
+        \n-> Hoang Nguyen: DATABASES!!!!
     </string>
 
     <string name="aboutApp">
-        >App Background
+        >//TODO
+        UC Irvine students doing thing for cs 125
     </string>
     <string name="aboutTeamHeader">
-        >About The Team:
+        > About The Team:
     </string>
 
     <string name="aboutAppHeader">
-        >About This App:
+        > About This App:
     </string>
 
 

@@ -30,6 +30,7 @@ public class ReportActivity extends Activity {
         getIntentInfo();
         handleWidgets();
     }
+
     private void getIntentInfo(){
         Bundle b = getIntent().getExtras();
         if( b != null ) {
@@ -42,9 +43,11 @@ public class ReportActivity extends Activity {
             tVLocation.setText(tVContent);
         }
     }
+
     private void handleWidgets(){
         handleButtons();
     }
+
     private void handleButtons(){
         Button cancelReport = (Button) findViewById(R.id.Report_b_Cancel);
         Button sendReport = (Button) findViewById(R.id.Report_b_Send);
@@ -68,6 +71,7 @@ public class ReportActivity extends Activity {
                 setResult(RESULT_OK, intent);
                 toastThis("Sending Report");
                 // TODO
+                // Needs to catch if the user is reporting the same bathroom
                 /*
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("message");
@@ -93,11 +97,13 @@ public class ReportActivity extends Activity {
         }
         return zipCode;
     }
+
     private void toastThis(String message){
         Toast.makeText(thisContext,
                 message,
                 Toast.LENGTH_SHORT).show();
     }
+
     @Override
     public void onBackPressed() {
         moveTaskToBack(true);

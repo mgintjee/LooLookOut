@@ -18,7 +18,8 @@
             android:adjustViewBounds="true"
             android:background="@color/black"
             android:scaleType="fitXY"
-            android:src="@drawable/home_banner" />
+            android:src="@drawable/home_banner"
+            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout
