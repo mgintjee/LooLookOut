@@ -50,6 +50,9 @@
     <string name="cancel">Cancel Report</string>
     <string name="send">Send Report</string>
 
+    <string name="edit">Edit Restroom</string>
+    <string name="report">Report Restroom</string>
+
     <string name="aboutTeam">
         > Team:
         \n-> Ted Celis: JSON Stuff

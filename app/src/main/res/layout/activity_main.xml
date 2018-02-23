@@ -9,35 +9,26 @@
     android:background="@color/black">
 
     <LinearLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:id="@+id/header">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:scaleType="fitXY"
-            android:visibility="gone"
-            app:srcCompat="@drawable/home_banner" />
+        android:layout_alignParentTop="true">
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/header"
-        android:layout_above="@id/footer">
-        <fragment
-            xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_above="@id/footer"
+        android:layout_below="@id/header">
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/map"
             class="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context="com.example.LooLookOut.MainActivity"/>
+            tools:context="com.example.LooLookOut.MainActivity" />
     </LinearLayout>
 
     <LinearLayout
@@ -45,59 +36,92 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:id="@+id/footer"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/iBFilter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:background="@color/teal"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/filter" />
+            android:background="@color/aqua"
+            android:visibility="gone">
 
-        <ImageButton
-            android:id="@+id/Main_FooterSpacer0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:background="@color/colorAccent"
-            android:scaleType="fitXY"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/addtoilet" />
+            <Button
+                android:id="@+id/bEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/edit"
+                android:visibility="invisible" />
 
-        <ImageButton
-            android:id="@+id/iBReport"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:background="@color/teal"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/addtoilet" />
+            <Button
+                android:id="@+id/bReport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/report"
+                android:visibility="invisible" />
+        </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/Main_FooterSpacer1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:background="@color/colorAccent"
-            android:scaleType="fitXY"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/addtoilet" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/footer"
+            android:layout_below="@id/header"
+            android:layout_weight="1">
 
-        <ImageButton
-            android:id="@+id/iBAbout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:background="@color/teal"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/gear" />
+            <ImageButton
+                android:id="@+id/iBFilter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="@color/aqua"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/filter" />
+
+            <ImageButton
+                android:id="@+id/Main_FooterSpacer0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="@color/colorAccent"
+                android:scaleType="fitXY"
+                android:visibility="invisible"
+                app:srcCompat="@drawable/addtoilet" />
+
+            <ImageButton
+                android:id="@+id/iBReport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="@color/aqua"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/addtoilet" />
+
+            <ImageButton
+                android:id="@+id/Main_FooterSpacer1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="@color/colorAccent"
+                android:scaleType="fitXY"
+                android:visibility="invisible"
+                app:srcCompat="@drawable/addtoilet" />
+
+            <ImageButton
+                android:id="@+id/iBAbout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="@color/aqua"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/gear" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

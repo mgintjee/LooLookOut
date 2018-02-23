@@ -12,15 +12,6 @@
         android:layout_alignParentTop="true"
         android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:scaleType="fitXY"
-            android:src="@drawable/filters_banner"
-            android:visibility="gone" />
-
         <Button
             android:id="@+id/Filter_b_ClearFilters"
             style="@style/Widget.AppCompat.Button.Borderless"

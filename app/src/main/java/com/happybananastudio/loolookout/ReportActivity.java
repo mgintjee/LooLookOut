@@ -9,15 +9,26 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 public class ReportActivity extends Activity {
+    private int gender = 0, size = 0, clean = 0, traffic = 0, access = 0;
+    private final ArrayList<String> possibleClean = new ArrayList<>(
+            Arrays.asList("N/A", "At Least Very Dirty", "At Least Dirty", "At Least Neutral", "At Least Clean", "At Least Very Clean" ));
+    private ArrayList<Integer> amenities = new ArrayList<>();
     Context thisContext = this;
     private LatLng latLng;
 
@@ -46,6 +57,12 @@ public class ReportActivity extends Activity {
 
     private void handleWidgets(){
         handleButtons();
+        handleGenderRadioGroup();
+        handleSizeRadioGroup();
+        handleCleanSeekBar();
+        handleTrafficRadioGroup();
+        handleAccessRadioGroup();
+        handleCheckBoxes();
     }
 
     private void handleButtons(){
@@ -69,7 +86,25 @@ public class ReportActivity extends Activity {
                 Intent intent = new Intent();
 
                 setResult(RESULT_OK, intent);
-                toastThis("Sending Report");
+
+                StringBuilder features = new StringBuilder("");
+                features.append(latLng.latitude).append(",").append(latLng.longitude).append(":");
+                features.append(gender).append(":");
+                features.append(size).append(":");
+                features.append(clean).append(":");
+                features.append(traffic).append(":");
+                features.append(access).append(":");
+
+                if( amenities.size() == 0 ){
+                    amenities.add(0);
+                }
+
+                for( int i = 0; i < amenities.size() - 1; ++i ){
+                    features.append(amenities.get(i)).append(",");
+                }
+                features.append(amenities.get(amenities.size() - 1));
+                String temp = features.toString();
+                toastThis("Sending Report: " + temp);
                 // TODO
                 // Needs to catch if the user is reporting the same bathroom
                 /*
@@ -77,10 +112,106 @@ public class ReportActivity extends Activity {
                 DatabaseReference myRef = database.getReference("message");
 
                 myRef.setValue("Hello, World!");
-                Log.d("bbop",myRef.toString());
+                Log.d("boop",myRef.toString());
                 */
                 finish();
                 overridePendingTransition(0, 0);
+            }
+        });
+    }
+    private void handleGenderRadioGroup(){
+        final RadioGroup genderGroup = (RadioGroup) findViewById(R.id.Report_rG_Gender);
+        genderGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton checkedButton = (RadioButton) findViewById(checkedId);
+                gender = genderGroup.indexOfChild(checkedButton);
+            }
+        });
+    }
+    private void handleSizeRadioGroup(){
+        final RadioGroup sizeGroup = (RadioGroup) findViewById(R.id.Report_rG_Size);
+        sizeGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton checkedButton = (RadioButton) findViewById(checkedId);
+                size = sizeGroup.indexOfChild(checkedButton);
+            }
+        });
+    }
+    private void handleCleanSeekBar(){
+        final SeekBar cleanSeekBar = (SeekBar) findViewById(R.id.Report_sB_Clean);
+        cleanSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                TextView tVClean = (TextView) findViewById(R.id.Report_tV_Clean);
+                tVClean.setText(possibleClean.get(progress));
+                clean = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+    }
+    private void handleTrafficRadioGroup(){
+        final RadioGroup trafficGroup = (RadioGroup) findViewById(R.id.Report_rG_Traffic);
+        trafficGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton checkedButton = (RadioButton) findViewById(checkedId);
+                traffic = trafficGroup.indexOfChild(checkedButton);
+            }
+        });
+    }
+    private void handleAccessRadioGroup(){
+        final RadioGroup accessGroup = (RadioGroup) findViewById(R.id.Report_rG_Access);
+        accessGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton checkedButton = (RadioButton) findViewById(checkedId);
+                access = accessGroup.indexOfChild(checkedButton);
+            }
+        });
+    }
+    private void handleCheckBoxes(){
+        CheckBox diaper = (CheckBox) findViewById(R.id.Report_cB_Diaper);
+        CheckBox condom = (CheckBox) findViewById(R.id.Report_cB_Condom);
+        CheckBox tampon = (CheckBox) findViewById(R.id.Report_cB_Tampon);
+
+        diaper.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if( isChecked ){
+                    amenities.add(1);
+                }
+                else{
+                    amenities.remove(Integer.valueOf(1));
+                }
+            }
+        });
+        condom.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if( isChecked ){
+                    amenities.add(2);
+                }
+                else{
+                    amenities.remove(Integer.valueOf(2));
+                }
+            }
+        });
+        tampon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if( isChecked ){
+                    amenities.add(3);
+                }
+                else{
+                    amenities.remove(Integer.valueOf(3));
+                }
             }
         });
     }

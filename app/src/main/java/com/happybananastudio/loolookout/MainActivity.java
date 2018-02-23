@@ -15,7 +15,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -66,11 +68,11 @@ public class MainActivity extends AppCompatActivity
                             "6:00 am","7:00 am","8:00 am","9:00 am","10:00 am","11:00 am",
                             "12:00 pm","1:00 pm","2:00 pm","3:00 pm","4:00 pm","5:00 pm",
                             "6:00 pm","7:00 pm","8:00 pm","9:00 pm","10:00 pm","11:00 pm"));
+    private String filters = "";
 
 
     private Context thisContext = this;
     private DatabaseReference mDatabase;
-    private ArrayList<String> restroomInfoList;
     private static final String TAG = MainActivity.class.getSimpleName();
     private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
@@ -98,11 +100,6 @@ public class MainActivity extends AppCompatActivity
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
-    private final int  FAMILY = 3;
-    private final int FEMALE = 2;
-    private final int MALE = 1;
-    private final int INCLUSIVE = 0;
-
     private final int FILTERS_ACTIVITY = 1;
     private final int REPORT_ACTIVITY = 2;
     private final int ABOUT_ACTIVITY = 3;
@@ -111,7 +108,6 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        restroomInfoList = new ArrayList<>();
         initializeImageButtons();
         setImageButtonListeners();
         // Retrieve location and camera position from saved instance state.
@@ -192,16 +188,16 @@ public class MainActivity extends AppCompatActivity
         mMap.setInfoWindowAdapter(customInfoWindow);
 
         switch (genderIndex){
-            case INCLUSIVE:
+            case 0: // Inclusive
                 iconName = "pin_inclusive";
                 break;
-            case MALE:
+            case 1: // Male
                 iconName = "pin_male";
                 break;
-            case FEMALE:
+            case 2: // Female
                 iconName = "pin_female";
                 break;
-            case FAMILY:
+            case 3: // Family
                 iconName = "pin_family";
                 break;
             default:
@@ -283,6 +279,18 @@ public class MainActivity extends AppCompatActivity
 
         String zipCode = getZipCode(lat, lng);
         getRestroomInfoFromDB(mDatabase.child(zipCode));
+        /*
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Button bEditRestroom = (Button) findViewById(R.id.bEdit);
+                Button bReportRestroom = (Button) findViewById(R.id.bReport);
+                bEditRestroom.setVisibility(View.VISIBLE);
+                bReportRestroom.setVisibility(View.VISIBLE);
+                return false;
+            }
+        });
+        */
     }
 
     private void getRestroomInfoFromDB(DatabaseReference dbRef){
@@ -295,7 +303,6 @@ public class MainActivity extends AppCompatActivity
                 for( DataSnapshot dsChild : dsChildData){
                     String value = dsChild.getValue(String.class);
                     addMarker(value);
-                    restroomInfoList.add(value);
                     c++;
                 }
                 Log.d("Rest Count ", Integer.toString(c));
@@ -403,6 +410,20 @@ public class MainActivity extends AppCompatActivity
             outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
             outState.putParcelable(KEY_LOCATION, mLastKnownLocation);
             super.onSaveInstanceState(outState);
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            switch(requestCode) {
+                case ABOUT_ACTIVITY:
+                    break;
+                case FILTERS_ACTIVITY:
+                case REPORT_ACTIVITY:
+                    loadPostalRestrooms();
+                    break;
+
+            }
         }
     }
 }

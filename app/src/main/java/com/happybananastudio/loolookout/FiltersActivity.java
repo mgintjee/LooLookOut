@@ -20,7 +20,7 @@ import java.util.Arrays;
 
 public class FiltersActivity extends Activity {
     private final ArrayList<String> possibleClean = new ArrayList<>(
-            Arrays.asList("N/A", "Very Dirty", "Dirty", "Neutral", "Clean", "Very Clean" ));
+            Arrays.asList("N/A", "At Least Very Dirty", "At Least Dirty", "At Least Neutral", "At Least Clean", "At Least Very Clean" ));
     private int gender = 0, size = 0, clean = 0, traffic = 0, access = 0;
     private ArrayList<Integer> amenities = new ArrayList<>();
     Context thisContext = this;
@@ -68,6 +68,7 @@ public class FiltersActivity extends Activity {
                 intent.putExtra("filters", filters.toString());
 
                 setResult(RESULT_OK, intent);
+                toastThis("Applying Filters");
                 finish();
                 overridePendingTransition(0, 0);
             }

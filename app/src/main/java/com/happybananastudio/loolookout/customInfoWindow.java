@@ -3,7 +3,9 @@ package com.happybananastudio.loolookout;
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
@@ -57,6 +59,12 @@ public class customInfoWindow implements GoogleMap.InfoWindowAdapter {
         tVAmenities.setText(amenities);
 
         return view;
+    }
+
+    private void toastThis(String message){
+        Toast.makeText(context,
+                message,
+                Toast.LENGTH_SHORT).show();
     }
 }
 
