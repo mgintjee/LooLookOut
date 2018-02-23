@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity
         iBAbout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toastThis("Reporting Restroom");
+                toastThis("About this App");
 
                 Intent intent = new Intent(thisContext, AboutActivity.class);
                 startActivityForResult(intent, ABOUT_ACTIVITY);
