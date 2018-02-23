@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,9 +35,16 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity
         implements OnMapReadyCallback {
@@ -59,8 +68,9 @@ public class MainActivity extends AppCompatActivity
                             "6:00 pm","7:00 pm","8:00 pm","9:00 pm","10:00 pm","11:00 pm"));
 
 
-    Context thisContext = this;
-
+    private Context thisContext = this;
+    private DatabaseReference mDatabase;
+    private ArrayList<String> restroomInfoList;
     private static final String TAG = MainActivity.class.getSimpleName();
     private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
@@ -101,6 +111,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        restroomInfoList = new ArrayList<>();
         initializeImageButtons();
         setImageButtonListeners();
         // Retrieve location and camera position from saved instance state.
@@ -133,11 +144,7 @@ public class MainActivity extends AppCompatActivity
         double lat, lng;
         String iconName;
         String[] infoParts = Info.split(":");
-        /*
-        for( int i = 0; i < infoParts.length; ++i ){
-            Log.d("debug", Integer.toString(i) + " " + infoParts[i]);
-        }
-        */
+
         lat = Double.parseDouble(infoParts[0].split(",")[0]);
         lng = Double.parseDouble(infoParts[0].split(",")[1]);
 
@@ -159,10 +166,8 @@ public class MainActivity extends AppCompatActivity
         access = possibleAccess.get(accessIndex);
         closing = possibleClosing.get(closingIndex);
         String[] amenityParts = amenitiesIndices.split(",");
-        Log.d("Amenitiy Size:", String.valueOf(amenityParts.length));
 
         for( int i = 0; i < amenityParts.length - 1; ++i){
-            Log.d("Amenitiy:", possibleAmenity.get(Integer.valueOf(amenityParts[i])));
             amenities.append(possibleAmenity.get(Integer.valueOf(amenityParts[i]))).append(",\n");
         }
         amenities.append(possibleAmenity.get(Integer.valueOf(amenityParts[amenityParts.length - 1]))).append((amenityParts.length == 1 )?"":"\n");
@@ -205,7 +210,7 @@ public class MainActivity extends AppCompatActivity
 
         MarkerOptions newMarker = new MarkerOptions()
                 .position(latLng)
-                .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(iconName,150,150)));
+                .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(iconName)));
 
         Marker m  = mMap.addMarker(newMarker);
         m.setTag(info);
@@ -255,18 +260,53 @@ public class MainActivity extends AppCompatActivity
                 Toast.LENGTH_SHORT).show();
     }
 
-    public Bitmap resizeMapIcons(String iconName,int width, int height){
+    public Bitmap resizeMapIcons(String iconName){
         Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
-        return resizedBitmap;
+        return Bitmap.createScaledBitmap(imageBitmap, 150, 150, false);
+    }
+    private String getZipCode(Double latitude, Double longitude)
+    {
+        String zipCode = "";
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            zipCode = addresses.get(0).getPostalCode();
+        }
+        catch (Exception e){
+        }
+        return zipCode;
+    }
+    private void loadPostalRestrooms(){
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        Double lat = mLastKnownLocation.getLatitude();
+        Double lng = mLastKnownLocation.getLongitude();
+
+        String zipCode = getZipCode(lat, lng);
+        getRestroomInfoFromDB(mDatabase.child(zipCode));
+    }
+
+    private void getRestroomInfoFromDB(DatabaseReference dbRef){
+
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
+                int c = 0;
+                for( DataSnapshot dsChild : dsChildData){
+                    String value = dsChild.getValue(String.class);
+                    addMarker(value);
+                    restroomInfoList.add(value);
+                    c++;
+                }
+                Log.d("Rest Count ", Integer.toString(c));
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
     }
 
     // The Original Code From The Template
     private void getDeviceLocation() {
-        /*
-         * Get the best and most recent location of the device, which may be null in rare
-         * cases when a location is not available.
-         */
         try {
             if (mLocationPermissionGranted) {
                 Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
@@ -279,12 +319,8 @@ public class MainActivity extends AppCompatActivity
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-
-                            addMarker( Double.toString(mLastKnownLocation.getLatitude())+","+Double.toString(mLastKnownLocation.getLongitude()) + ":0:0:0:0:0:0:0:0");
-                            addMarker( Double.toString(mLastKnownLocation.getLatitude()+0.01)+","+Double.toString(mLastKnownLocation.getLongitude()) + ":1:1:1:1:1:1:1:0");
-                            addMarker( Double.toString(mLastKnownLocation.getLatitude()-0.01)+","+Double.toString(mLastKnownLocation.getLongitude()) + ":2:1:1:1:1:1:1:0");
-                            addMarker( Double.toString(mLastKnownLocation.getLatitude())+","+Double.toString(mLastKnownLocation.getLongitude()+0.01) + ":3:1:1:1:1:1:1:0");
-
+                            // DOES ALL THE HEAVY LIFTING HERE
+                            loadPostalRestrooms();
                         }
                         else {
                             Log.d(TAG, "Current location is null. Using defaults.");
@@ -292,7 +328,6 @@ public class MainActivity extends AppCompatActivity
                             mMap.moveCamera(CameraUpdateFactory
                                     .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
-
                         }
                     }
                 });
@@ -302,11 +337,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
     private void getLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -356,9 +386,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
-
-        // Use a custom info window adapter to handle multiple lines of text in the
-        // info window contents.
 
         // Prompt the user for permission.
         getLocationPermission();
