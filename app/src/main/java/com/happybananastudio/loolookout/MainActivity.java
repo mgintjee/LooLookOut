@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.StringJoiner;
 
 public class MainActivity extends AppCompatActivity
         implements OnMapReadyCallback {
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private Context thisContext = this;
+    private String zipCode;
     private DatabaseReference mDatabase;
     private static final String TAG = MainActivity.class.getSimpleName();
     private GoogleApiClient mGoogleApiClient;
@@ -133,7 +135,7 @@ public class MainActivity extends AppCompatActivity
 
     // My Code
     private void addMarker( String Info ){
-        int genderIndex, sizeIndex, cleanIndex, trafficIndex, accessIndex, closingIndex, amenityCount;
+        int genderIndex, sizeIndex, cleanIndex, trafficIndex, accessIndex, closingIndex, amenityCount, voteCount;
         String gender, size, clean, traffic, access, closing, amenitiesIndices;
         StringBuilder amenities = new StringBuilder("");
         LatLng latLng;
@@ -154,6 +156,8 @@ public class MainActivity extends AppCompatActivity
         accessIndex = Integer.valueOf(infoParts[5]);
         closingIndex = Integer.valueOf(infoParts[6]);
         amenitiesIndices = infoParts[8];
+        voteCount = Integer.valueOf(infoParts[9]);
+        Log.d("count",infoParts[9] + " -> " + String.valueOf(voteCount));
 
         gender = possibleGender.get(genderIndex);
         size = possibleSize.get(sizeIndex);
@@ -166,11 +170,11 @@ public class MainActivity extends AppCompatActivity
         for( int i = 0; i < amenityParts.length - 1; ++i){
             amenities.append(possibleAmenity.get(Integer.valueOf(amenityParts[i]))).append(",\n");
         }
-        amenities.append(possibleAmenity.get(Integer.valueOf(amenityParts[amenityParts.length - 1]))).append((amenityParts.length == 1 )?"":"\n");
+        amenities.append(possibleAmenity.get(Integer.valueOf(amenityParts[amenityParts.length - 1])));
 
         amenityCount = amenityParts.length;
 
-        if( amenityCount == 1 ){amenityCount = 2;}
+        //if( amenityCount == 1 ){amenityCount = 2;}
 
         // Fill Info Window
         infoWindowData info = new infoWindowData();
@@ -183,6 +187,7 @@ public class MainActivity extends AppCompatActivity
         info.setClosing(closing);
         info.setAmenities(amenities.toString());
         info.setAmenityCount(amenityCount);
+        info.setVoteCount(voteCount);
 
         customInfoWindow customInfoWindow = new customInfoWindow(this);
         mMap.setInfoWindowAdapter(customInfoWindow);
@@ -277,7 +282,7 @@ public class MainActivity extends AppCompatActivity
         Double lat = mLastKnownLocation.getLatitude();
         Double lng = mLastKnownLocation.getLongitude();
 
-        String zipCode = getZipCode(lat, lng);
+        zipCode = getZipCode(lat, lng);
         getRestroomInfoFromDB(mDatabase.child(zipCode));
         /*
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -295,17 +300,24 @@ public class MainActivity extends AppCompatActivity
 
     private void getRestroomInfoFromDB(DatabaseReference dbRef){
 
+        final boolean format = true;
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
-                int c = 0;
-                for( DataSnapshot dsChild : dsChildData){
-                    String value = dsChild.getValue(String.class);
-                    addMarker(value);
-                    c++;
+                if( format ){
+                    Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
+                    int c = 0;
+                    for( DataSnapshot dsChild : dsChildData){
+                        String key = dsChild.getKey().replace("_",".");
+                        String value = dsChild.getValue(String.class);
+                        String markerInfo = key+":"+value;
+
+                        addMarker(markerInfo);
+                        c++;
+                    }
+                    Log.d("Rest Count ", Integer.toString(c));
+
                 }
-                Log.d("Rest Count ", Integer.toString(c));
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}

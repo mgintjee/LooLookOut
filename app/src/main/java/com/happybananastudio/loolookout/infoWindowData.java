@@ -17,6 +17,7 @@ public class infoWindowData {
     private String closing;
     private String amenities;
     private int amenityCount;
+    private int voteCount;
 
     // Setters
     public void setLatLng( LatLng newLatLng ){
@@ -44,6 +45,7 @@ public class infoWindowData {
         amenities = newAmenities;
     }
     public void setAmenityCount( int count ) { amenityCount = count; }
+    public void setVoteCount( int count ) { voteCount = count; }
 
     // Getters
     public LatLng getLatLng( ){
@@ -72,5 +74,8 @@ public class infoWindowData {
     }
     public int getAmenityCount(){
         return amenityCount;
+    }
+    public int getVoteCount(){
+        return voteCount;
     }
 }

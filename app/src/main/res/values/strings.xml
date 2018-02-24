@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LooLookOut</string>
+    <string name="app_name">Loo-LookOut</string>
     <string name="defaultText">ew</string>
 
     <string name="my_google_maps_key">AIzaSyAen9NzPj2xYZtK1EUVBBpEmMIQLq5S85M"</string>
@@ -10,6 +10,7 @@
     <string name="access">Access</string>
     <string name="closing">Closing Hours</string>
     <string name="amenities">Amenities</string>
+    <string name="votes">Vote Count</string>
 
     <string name="spacer">:</string>
 

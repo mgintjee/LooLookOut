@@ -39,6 +39,7 @@ public class customInfoWindow implements GoogleMap.InfoWindowAdapter {
         TextView tVAccess = (TextView) view.findViewById(R.id.tV_Access);
         TextView tVClosing = (TextView) view.findViewById(R.id.tV_Closing);
         TextView tVAmenities = (TextView) view.findViewById(R.id.tV_Amenities);
+        TextView tVVoteCounts = (TextView) view.findViewById(R.id.tV_VoteCount);
 
         String gender = info.getGender();
         String size = info.getSize();
@@ -49,6 +50,7 @@ public class customInfoWindow implements GoogleMap.InfoWindowAdapter {
         int count = info.getAmenityCount();
         String spacer = String.format("%0" + count + "d", 0).replace("0", "\n");
         String amenities = info.getAmenities() + spacer;
+        String voteCount = info.getVoteCount() + "\n\n";
 
         tVGender.setText(gender);
         tVSize.setText(size);
@@ -57,6 +59,7 @@ public class customInfoWindow implements GoogleMap.InfoWindowAdapter {
         tVAccess.setText(access);
         tVClosing.setText(closing);
         tVAmenities.setText(amenities);
+        tVVoteCounts.setText(voteCount);
 
         return view;
     }
