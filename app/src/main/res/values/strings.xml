@@ -30,6 +30,8 @@
     <string name="large">Large\n(6&lt;T)</string>
 
     <string name="clean">Clean</string>
+    <string name="time">Closing Time</string>
+
     <string name="dirty">Dirty</string>
 
     <string name="low">Low</string>

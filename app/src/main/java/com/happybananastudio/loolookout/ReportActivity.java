@@ -25,9 +25,15 @@ import java.util.List;
 import java.util.Locale;
 
 public class ReportActivity extends Activity {
-    private int gender = 0, size = 0, clean = 0, traffic = 0, access = 0;
+    private int gender = 0, size = 0, clean = 0, traffic = 0, access = 0, time = 0;
     private final ArrayList<String> possibleClean = new ArrayList<>(
             Arrays.asList("N/A", "At Least Very Dirty", "At Least Dirty", "At Least Neutral", "At Least Clean", "At Least Very Clean" ));
+    private final ArrayList<String> possibleClosing = new ArrayList<>(
+            Arrays.asList("N/A",
+                    "12:00 am","1:00 am","2:00 am","3:00 am","4:00 am","5:00 am",
+                    "6:00 am","7:00 am","8:00 am","9:00 am","10:00 am","11:00 am",
+                    "12:00 pm","1:00 pm","2:00 pm","3:00 pm","4:00 pm","5:00 pm",
+                    "6:00 pm","7:00 pm","8:00 pm","9:00 pm","10:00 pm","11:00 pm"));
     private ArrayList<Integer> amenities = new ArrayList<>();
     Context thisContext = this;
     private LatLng latLng;
@@ -44,7 +50,8 @@ public class ReportActivity extends Activity {
 
     private void getIntentInfo(){
         Bundle b = getIntent().getExtras();
-        if( b != null ) {
+        if( b != null )
+        {
             double lat = b.getDouble("lat");
             double lng = b.getDouble("lng");
             String zipCode = getZipCode(lat, lng);
@@ -62,6 +69,7 @@ public class ReportActivity extends Activity {
         handleCleanSeekBar();
         handleTrafficRadioGroup();
         handleAccessRadioGroup();
+        handleTimeSeekBar();
         handleCheckBoxes();
     }
 
@@ -103,17 +111,8 @@ public class ReportActivity extends Activity {
                     features.append(amenities.get(i)).append(",");
                 }
                 features.append(amenities.get(amenities.size() - 1));
-                String temp = features.toString();
-                toastThis("Sending Report: " + temp);
-                // TODO
-                // Needs to catch if the user is reporting the same bathroom
-                /*
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = database.getReference("message");
-
-                myRef.setValue("Hello, World!");
-                Log.d("boop",myRef.toString());
-                */
+                String featuresString = features.toString();
+                intent.putExtra("features", featuresString);
                 finish();
                 overridePendingTransition(0, 0);
             }
@@ -147,6 +146,23 @@ public class ReportActivity extends Activity {
                 TextView tVClean = (TextView) findViewById(R.id.Report_tV_Clean);
                 tVClean.setText(possibleClean.get(progress));
                 clean = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+    }
+    private void handleTimeSeekBar(){
+        final SeekBar cleanSeekBar = (SeekBar) findViewById(R.id.Report_sB_Time);
+        cleanSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                TextView tVTime = (TextView) findViewById(R.id.Report_tV_Time);
+                tVTime.setText(possibleClosing.get(progress));
+                time = progress;
             }
 
             @Override

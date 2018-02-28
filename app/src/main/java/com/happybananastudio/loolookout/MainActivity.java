@@ -157,7 +157,6 @@ public class MainActivity extends AppCompatActivity
         closingIndex = Integer.valueOf(infoParts[6]);
         amenitiesIndices = infoParts[8];
         voteCount = Integer.valueOf(infoParts[9]);
-        Log.d("count",infoParts[9] + " -> " + String.valueOf(voteCount));
 
         gender = possibleGender.get(genderIndex);
         size = possibleSize.get(sizeIndex);
@@ -241,7 +240,6 @@ public class MainActivity extends AppCompatActivity
                 intent.putExtra("lat", mLastKnownLocation.getLatitude());
                 intent.putExtra("lng", mLastKnownLocation.getLongitude());
                 startActivityForResult(intent, REPORT_ACTIVITY);
-
             }
         });
         iBAbout.setOnClickListener(new View.OnClickListener() {
@@ -258,7 +256,7 @@ public class MainActivity extends AppCompatActivity
     private void toastThis(String message){
         Toast.makeText(thisContext,
                 message,
-                Toast.LENGTH_SHORT).show();
+                Toast.LENGTH_LONG).show();
     }
 
     public Bitmap resizeMapIcons(String iconName){
@@ -284,18 +282,6 @@ public class MainActivity extends AppCompatActivity
 
         zipCode = getZipCode(lat, lng);
         getRestroomInfoFromDB(mDatabase.child(zipCode));
-        /*
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                Button bEditRestroom = (Button) findViewById(R.id.bEdit);
-                Button bReportRestroom = (Button) findViewById(R.id.bReport);
-                bEditRestroom.setVisibility(View.VISIBLE);
-                bReportRestroom.setVisibility(View.VISIBLE);
-                return false;
-            }
-        });
-        */
     }
 
     private void getRestroomInfoFromDB(DatabaseReference dbRef){
@@ -304,20 +290,17 @@ public class MainActivity extends AppCompatActivity
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if( format ){
-                    Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
-                    int c = 0;
-                    for( DataSnapshot dsChild : dsChildData){
-                        String key = dsChild.getKey().replace("_",".");
-                        String value = dsChild.getValue(String.class);
-                        String markerInfo = key+":"+value;
-
-                        addMarker(markerInfo);
-                        c++;
-                    }
-                    Log.d("Rest Count ", Integer.toString(c));
-
+                Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
+                int c = 0;
+                for( DataSnapshot dsChild : dsChildData){
+                    String key = dsChild.getKey().replace("_",".");
+                    String value = dsChild.getValue(String.class);
+                    String markerInfo = key+":"+value;
+                    addMarker(markerInfo)
+                    ;
+                    c++;
                 }
+                Log.d("Rest Count ", Integer.toString(c));
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -384,6 +367,56 @@ public class MainActivity extends AppCompatActivity
             Log.e("Exception: %s", e.getMessage());
         }
     }
+    private void handleRestroomReport(final String features ){
+        toastThis(features);
+        final String[] listOfFeatures = features.split(":");
+        final String reportCoordinates = "33.641777,-117.852028:0";//listOfFeatures[0];
+        DatabaseReference dbRef = mDatabase.child(zipCode);
+
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
+                boolean exists = false;
+                int reportCount = 1;
+                for( DataSnapshot dsChild : dsChildData){
+                    String key = dsChild.getKey().replace("_",".");
+                    String value = dsChild.getValue(String.class);
+                    //todo
+                    String markerInfo = key+":"+value;
+                    if( key.equals(reportCoordinates) ){
+                        reportCount = Integer.valueOf(dsChild.getValue(String.class).split(":")[7]);
+                        exists = true;
+                        break;
+                    }
+                    //addMarker(markerInfo);
+                }
+                if( exists){handleExistingRestroom(features, reportCount);
+                }
+                else{
+                    handleAbsentRestroom(features);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
+    private void handleExistingRestroom(String features, int reportCount){
+        String[] listOfFeatures = features.split(":");
+        String reportCoordinates = listOfFeatures[0];
+        String reportGender = listOfFeatures[1];
+        int coordinates = reportCoordinates.length();
+        String featureString = features.substring(coordinates);
+        Log.d("Features", features);
+        Log.d(reportCoordinates + " " + reportGender, "THIS EXISTS ALREADY W/ " + String.valueOf(reportCount) + " " + String.valueOf(coordinates) + " " + reportGender + featureString + ":" + String.valueOf(reportCount));
+    }
+    private void handleAbsentRestroom(String features){
+        String[] listOfFeatures = features.split(":");
+        String reportCoordinates = listOfFeatures[0];
+        String reportGender = listOfFeatures[1];
+        Log.d(reportCoordinates + " " + reportGender, "THIS ABSENT ALREADY");
+        //mDatabase.child(zipCode).child(reportCoordinates).setValue(reportGender);
+    }
 
     // The Original Code From The Template
     @Override
@@ -431,7 +464,12 @@ public class MainActivity extends AppCompatActivity
                 case ABOUT_ACTIVITY:
                     break;
                 case FILTERS_ACTIVITY:
+                    filters = data.getStringExtra("filters");
+                    loadPostalRestrooms();
+                    break;
                 case REPORT_ACTIVITY:
+                    String features = data.getStringExtra("features");
+                    handleRestroomReport(features);
                     loadPostalRestrooms();
                     break;
 
