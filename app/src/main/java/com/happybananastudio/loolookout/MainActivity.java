@@ -148,15 +148,14 @@ public class MainActivity extends AppCompatActivity
 
         // Handling the data
         latLng = new LatLng(lat, lng);
-
         genderIndex = Integer.valueOf(infoParts[1]);
         sizeIndex = Integer.valueOf(infoParts[2]);
         cleanIndex = Integer.valueOf(infoParts[3]);
         trafficIndex = Integer.valueOf(infoParts[4]);
         accessIndex = Integer.valueOf(infoParts[5]);
         closingIndex = Integer.valueOf(infoParts[6]);
-        amenitiesIndices = infoParts[8];
-        voteCount = Integer.valueOf(infoParts[9]);
+        amenitiesIndices = infoParts[7];
+        voteCount = Integer.valueOf(infoParts[8]);
 
         gender = possibleGender.get(genderIndex);
         size = possibleSize.get(sizeIndex);
@@ -296,8 +295,7 @@ public class MainActivity extends AppCompatActivity
                     String key = dsChild.getKey().replace("_",".");
                     String value = dsChild.getValue(String.class);
                     String markerInfo = key+":"+value;
-                    addMarker(markerInfo)
-                    ;
+                    addMarker(markerInfo);
                     c++;
                 }
                 Log.d("Rest Count ", Integer.toString(c));
@@ -370,7 +368,7 @@ public class MainActivity extends AppCompatActivity
     private void handleRestroomReport(final String features ){
         toastThis(features);
         final String[] listOfFeatures = features.split(":");
-        final String reportCoordinates = "33.641777,-117.852028:0";//listOfFeatures[0];
+        final String reportCoordinates = listOfFeatures[0];
         DatabaseReference dbRef = mDatabase.child(zipCode);
 
         dbRef.addValueEventListener(new ValueEventListener() {
@@ -389,7 +387,7 @@ public class MainActivity extends AppCompatActivity
                         exists = true;
                         break;
                     }
-                    //addMarker(markerInfo);
+                    addMarker(markerInfo);
                 }
                 if( exists){handleExistingRestroom(features, reportCount);
                 }
@@ -414,8 +412,14 @@ public class MainActivity extends AppCompatActivity
         String[] listOfFeatures = features.split(":");
         String reportCoordinates = listOfFeatures[0];
         String reportGender = listOfFeatures[1];
-        Log.d(reportCoordinates + " " + reportGender, "THIS ABSENT ALREADY");
-        //mDatabase.child(zipCode).child(reportCoordinates).setValue(reportGender);
+        int coordinates = reportCoordinates.length();
+        String featureString = features.substring(coordinates + 3);
+        String key = reportCoordinates + ":" + reportGender;
+        key = key.replace(".","_");
+        String value = featureString +":1";
+        Log.d("NEW","Key->" + key + "///" + "Value->" + value);
+        Log.d("Marker",key + value);
+        mDatabase.child(zipCode).child(key).setValue(value);
     }
 
     // The Original Code From The Template

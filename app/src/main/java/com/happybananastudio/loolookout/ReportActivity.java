@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -96,12 +97,13 @@ public class ReportActivity extends Activity {
                 setResult(RESULT_OK, intent);
 
                 StringBuilder features = new StringBuilder("");
-                features.append(latLng.latitude).append(",").append(latLng.longitude).append(":");
+                features.append(roundDouble(latLng.latitude)).append(",").append(roundDouble(latLng.longitude)).append(":");
                 features.append(gender).append(":");
                 features.append(size).append(":");
                 features.append(clean).append(":");
                 features.append(traffic).append(":");
                 features.append(access).append(":");
+                features.append(time).append(":");
 
                 if( amenities.size() == 0 ){
                     amenities.add(0);
@@ -243,6 +245,11 @@ public class ReportActivity extends Activity {
         catch (Exception e){
         }
         return zipCode;
+    }
+
+    private String roundDouble( Double n ){
+        DecimalFormat dF = new DecimalFormat("#.########");
+        return dF.format(n);
     }
 
     private void toastThis(String message){

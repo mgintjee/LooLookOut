@@ -49,8 +49,8 @@ public class customInfoWindow implements GoogleMap.InfoWindowAdapter {
         String closing = info.getClosing();
         int count = info.getAmenityCount();
         String spacer = String.format("%0" + count + "d", 0).replace("0", "\n");
-        String amenities = info.getAmenities() + spacer;
-        String voteCount = info.getVoteCount() + "\n\n";
+        String amenities = info.getAmenities();
+        String voteCount = info.getVoteCount() + spacer;
 
         tVGender.setText(gender);
         tVSize.setText(size);
