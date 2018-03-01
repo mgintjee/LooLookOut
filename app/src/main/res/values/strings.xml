@@ -14,8 +14,12 @@
 
     <string name="spacer">:</string>
 
+    <string name="new_one">New</string>
+    <string name="exist_one">Existing</string>
+
     <string name="minimize">Minimize Window</string>
     <string name="clear">Clear Filters</string>
+    <string name="save">Save Filters</string>
 
     <string name="none">N/A</string>
 

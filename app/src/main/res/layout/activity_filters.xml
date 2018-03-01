@@ -12,22 +12,13 @@
         android:layout_alignParentTop="true"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/Filter_b_ClearFilters"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/fuchsia"
-            android:text="@string/clear" />
-
     </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/Filter_header"
-        android:layout_above="@id/Filter_b_Minimize">
+        android:layout_above="@id/Filter_b_SaveFilters">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -359,13 +350,42 @@
         </LinearLayout>
     </ScrollView>
 
-    <Button
-        android:id="@+id/Filter_b_Minimize"
-        style="@style/Widget.AppCompat.Button.Borderless"
+    <LinearLayout
+        android:id="@+id/lL_Footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/teal"
-        android:text="@string/minimize" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/Filter_b_ClearFilters"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/holo_orange_dark"
+            android:text="@string/clear" />
+
+        <Button
+            android:id="@+id/Filter_FooterSpacer"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/cast_intro_overlay_button_background_color"
+            android:text="@string/send"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/Filter_b_SaveFilters"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_weight="1"
+            android:background="@android:color/holo_orange_dark"
+            android:text="@string/save" />
+
+    </LinearLayout>
 
 </RelativeLayout>

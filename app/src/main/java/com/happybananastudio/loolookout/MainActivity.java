@@ -1,6 +1,7 @@
 package com.happybananastudio.loolookout;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -8,10 +9,12 @@ import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -70,8 +73,11 @@ public class MainActivity extends AppCompatActivity
                             "12:00 pm","1:00 pm","2:00 pm","3:00 pm","4:00 pm","5:00 pm",
                             "6:00 pm","7:00 pm","8:00 pm","9:00 pm","10:00 pm","11:00 pm"));
     private String filters = "";
+    private Marker selectedMarker = null;
+    private boolean newReport = false;
 
 
+    private int MAX_DISTANCE = 25;
     private Context thisContext = this;
     private String zipCode;
     private DatabaseReference mDatabase;
@@ -79,7 +85,7 @@ public class MainActivity extends AppCompatActivity
     private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
     private CameraPosition mCameraPosition;
-    private ImageButton iBAbout, iBFilter, iBReport, iBTemp, iBRefresh;
+    private ImageButton iBAbout, iBFilter, iBReport, iBComplain;
     // The entry points to the Places API.
     private GeoDataClient mGeoDataClient;
     private PlaceDetectionClient mPlaceDetectionClient;
@@ -172,7 +178,7 @@ public class MainActivity extends AppCompatActivity
 
         amenityCount = amenityParts.length;
 
-        //if( amenityCount == 1 ){amenityCount = 2;}
+        if( amenityCount == 1 ){amenityCount = 2;}
 
         // Fill Info Window
         infoWindowData info = new infoWindowData();
@@ -215,40 +221,77 @@ public class MainActivity extends AppCompatActivity
         m.setTag(info);
     }
     private void initializeImageButtons(){
-        iBAbout = (ImageButton) findViewById(R.id.iBAbout);
         iBFilter = (ImageButton) this.findViewById(R.id.iBFilter);
+        iBComplain = (ImageButton) findViewById(R.id.iBComplain);
         iBReport = (ImageButton) findViewById(R.id.iBReport);
+        iBAbout = (ImageButton) findViewById(R.id.iBAbout);
     }
     private void setImageButtonListeners(){
 
         iBFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toastThis("Editing Filters");
-
-                Intent intent = new Intent(thisContext, FiltersActivity.class);
-                startActivityForResult(intent, FILTERS_ACTIVITY);
+                startFiltersActivity();
+            }
+        });
+        iBComplain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startComplainActivity();
             }
         });
         iBReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toastThis("Reporting Restroom");
-
-                Intent intent = new Intent(thisContext, ReportActivity.class);
-                intent.putExtra("lat", mLastKnownLocation.getLatitude());
-                intent.putExtra("lng", mLastKnownLocation.getLongitude());
-                startActivityForResult(intent, REPORT_ACTIVITY);
+                startReportActivity();
             }
         });
         iBAbout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toastThis("About this App");
+                startAboutActivity();
+            }
+        });
+    }
+    private void startFiltersActivity(){
+        toastThis("Editing Filters");
+        Intent intent = new Intent(thisContext, FiltersActivity.class);
+        startActivityForResult(intent, FILTERS_ACTIVITY);
+    }
+    private void startComplainActivity(){
+        if( selectedMarker != null ) {
+            infoWindowData info = (infoWindowData) selectedMarker.getTag();
+            // TODO
+            // Deduct report count for the selected marker and then handle if it is at 0
+        }
+        else{
+            dialogError("No Selected Marker", "There is no selected marker to file a complaint about.\nPlease select a marker to file a complaint on.");
+        }
+    }
+    private void startReportActivity(){
+        toastThis("Reporting Restroom");
+        Intent intent = new Intent(thisContext, ReportActivity.class);
+        intent.putExtra("lat", mLastKnownLocation.getLatitude());
+        intent.putExtra("lng", mLastKnownLocation.getLongitude());
+        startActivityForResult(intent, REPORT_ACTIVITY);
+    }
+    private void startAboutActivity(){
+        toastThis("About this App");
+        Intent intent = new Intent(thisContext, AboutActivity.class);
+        startActivityForResult(intent, ABOUT_ACTIVITY);
+    }
+    private void setMapMarkerListener(){
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                selectedMarker = marker;
 
-                Intent intent = new Intent(thisContext, AboutActivity.class);
-                startActivityForResult(intent, ABOUT_ACTIVITY);
-
+                if(marker.isInfoWindowShown()) {
+                    marker.hideInfoWindow();
+                } else {
+                    marker.showInfoWindow();
+                }
+                return false;
             }
         });
     }
@@ -262,8 +305,7 @@ public class MainActivity extends AppCompatActivity
         Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
         return Bitmap.createScaledBitmap(imageBitmap, 150, 150, false);
     }
-    private String getZipCode(Double latitude, Double longitude)
-    {
+    private String getZipCode(Double latitude, Double longitude) {
         String zipCode = "";
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
@@ -282,10 +324,7 @@ public class MainActivity extends AppCompatActivity
         zipCode = getZipCode(lat, lng);
         getRestroomInfoFromDB(mDatabase.child(zipCode));
     }
-
     private void getRestroomInfoFromDB(DatabaseReference dbRef){
-
-        final boolean format = true;
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -294,6 +333,8 @@ public class MainActivity extends AppCompatActivity
                 for( DataSnapshot dsChild : dsChildData){
                     String key = dsChild.getKey().replace("_",".");
                     String value = dsChild.getValue(String.class);
+                    //TODO
+                    // Handle the filters here in an if statement. Pretty straight forward i would think :S
                     String markerInfo = key+":"+value;
                     addMarker(markerInfo);
                     c++;
@@ -366,48 +407,120 @@ public class MainActivity extends AppCompatActivity
         }
     }
     private void handleRestroomReport(final String features ){
-        toastThis(features);
-        final String[] listOfFeatures = features.split(":");
-        final String reportCoordinates = listOfFeatures[0];
+        String[] listOfReportFeatures = features.split(":");
+        final String reportCoordinates = listOfReportFeatures[0];
+        final String reportGender = listOfReportFeatures[1];
         DatabaseReference dbRef = mDatabase.child(zipCode);
+        int coordinates = reportCoordinates.length() + 3;
+        final String featureString = features.substring(coordinates);
+        String[] centerLatLng = reportCoordinates.split(",");
+        final double centerLat = Double.valueOf(centerLatLng[0]);
+        final double centerLng = Double.valueOf(centerLatLng[1]);
 
-        dbRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
-                boolean exists = false;
-                int reportCount = 1;
-                for( DataSnapshot dsChild : dsChildData){
-                    String key = dsChild.getKey().replace("_",".");
-                    String value = dsChild.getValue(String.class);
-                    //todo
-                    String markerInfo = key+":"+value;
-                    if( key.equals(reportCoordinates) ){
-                        reportCount = Integer.valueOf(dsChild.getValue(String.class).split(":")[7]);
-                        exists = true;
-                        break;
+        if( newReport ) {
+            dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
+                    boolean exists = false;
+                    String oldKey = "";
+                    String reportCount = "1";
+                    int nearRestrooms = 0;
+                    float nearest = MAX_DISTANCE;
+                    float current;
+
+                    for (DataSnapshot dsChild : dsChildData) {
+                        String markerInfo = (dsChild.getKey() + ":" + dsChild.getValue()).replace("_", ".");
+                        String[] listOfTargetFeatures = markerInfo.split(":");
+                        String targetCoordinates = listOfTargetFeatures[0];
+                        String[] targetLatLng = targetCoordinates.split(",");
+                        String targetGender = listOfTargetFeatures[1];
+                        double targetLat = Double.valueOf(targetLatLng[0]);
+                        double targetLng = Double.valueOf(targetLatLng[1]);
+                        current = withinMaxDistance(centerLat, centerLng, targetLat, targetLng);
+
+                        Log.d("Genders", reportGender + " " + targetGender);
+                        if (nearest > current && reportGender.equals(targetGender)) {
+                            nearest = current;
+                            reportCount = String.valueOf(Integer.valueOf(listOfTargetFeatures[8]) + 1);
+                            oldKey = dsChild.getKey();
+                            exists = true;
+                            nearRestrooms++;
+                        }
                     }
-                    addMarker(markerInfo);
+
+                    if (exists) {
+                        dialogConfirmCancelNewRestroom(oldKey, reportCoordinates + ":" + reportGender, featureString, Integer.valueOf(reportGender), nearRestrooms, reportCount);
+                    } else {
+                        handleAbsentRestroom(features);
+                    }
+                    newReport = false;
                 }
-                if( exists){handleExistingRestroom(features, reportCount);
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
                 }
-                else{
-                    handleAbsentRestroom(features);
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        });
+            });
+        }
     }
+    private void dialogConfirmCancelNewRestroom(final String oldKey, final String newKey, final String features, int gender, int restroomCount, final String reportCount){
+        AlertDialog.Builder builder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(thisContext, R.style.AlertDialogStyle);
+        } else {
+            builder = new AlertDialog.Builder(thisContext);
+        }
+
+        String message = "We found " + String.valueOf(restroomCount) + " restrooms of the same gender, " + possibleGender.get(gender) + ", within " + String.valueOf(MAX_DISTANCE) + " meters of your location\n";
+
+        builder.setTitle("Is this an EXISTING or NEW restroom?")
+                .setMessage(message)
+                .setPositiveButton(R.string.new_one, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        handleAbsentRestroom(newKey + features);
+                        toastThis("Sending Report for New Restroom");
+                    }
+                })
+                .setNegativeButton(R.string.exist_one, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        mDatabase.child(zipCode).child(oldKey).setValue(features + ":" + reportCount);
+                        toastThis("Sending Report for Existing Restroom");
+                    }
+                })
+                .setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
+    }
+    private void dialogError(String title, String message){
+        AlertDialog.Builder builder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(thisContext, R.style.AlertDialogStyle);
+        } else {
+            builder = new AlertDialog.Builder(thisContext);
+        }
+        builder.setTitle(title)
+                .setMessage(message)
+                .setNeutralButton(R.string.minimize, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {}
+                })
+                .show();
+    }
+    /*
     private void handleExistingRestroom(String features, int reportCount){
         String[] listOfFeatures = features.split(":");
         String reportCoordinates = listOfFeatures[0];
         String reportGender = listOfFeatures[1];
         int coordinates = reportCoordinates.length();
         String featureString = features.substring(coordinates);
+        String[] coords = reportCoordinates.split(",");
         Log.d("Features", features);
         Log.d(reportCoordinates + " " + reportGender, "THIS EXISTS ALREADY W/ " + String.valueOf(reportCount) + " " + String.valueOf(coordinates) + " " + reportGender + featureString + ":" + String.valueOf(reportCount));
     }
+    */
     private void handleAbsentRestroom(String features){
         String[] listOfFeatures = features.split(":");
         String reportCoordinates = listOfFeatures[0];
@@ -420,6 +533,12 @@ public class MainActivity extends AppCompatActivity
         Log.d("NEW","Key->" + key + "///" + "Value->" + value);
         Log.d("Marker",key + value);
         mDatabase.child(zipCode).child(key).setValue(value);
+    }
+    private float withinMaxDistance(double centerLat, double centerLng, double pointLat, double pointLng){
+        float[] results = new float[1];
+        Location.distanceBetween(centerLat, centerLng, pointLat, pointLng, results);
+        float distanceInMeters = results[0];
+        return distanceInMeters;
     }
 
     // The Original Code From The Template
@@ -442,6 +561,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
+        setMapMarkerListener();
 
         // Prompt the user for permission.
         getLocationPermission();
@@ -469,10 +589,14 @@ public class MainActivity extends AppCompatActivity
                     break;
                 case FILTERS_ACTIVITY:
                     filters = data.getStringExtra("filters");
+                    // TODO
+                    // Remove all the markers that are visible
+                    //mMap.clear();
                     loadPostalRestrooms();
                     break;
                 case REPORT_ACTIVITY:
                     String features = data.getStringExtra("features");
+                    newReport = true;
                     handleRestroomReport(features);
                     loadPostalRestrooms();
                     break;

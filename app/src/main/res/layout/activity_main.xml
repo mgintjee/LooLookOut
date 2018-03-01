@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
-                android:background="@color/aqua"
+                android:background="@android:color/holo_orange_dark"
                 android:scaleType="fitXY"
                 app:srcCompat="@drawable/filter" />
 
@@ -91,17 +91,38 @@
                 app:srcCompat="@drawable/addtoilet" />
 
             <ImageButton
+                android:id="@+id/iBComplain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="@android:color/holo_orange_dark"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/reporttoilet" />
+
+            <ImageButton
+                android:id="@+id/Main_FooterSpacer1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="@color/colorAccent"
+                android:scaleType="fitXY"
+                android:visibility="invisible"
+                app:srcCompat="@drawable/addtoilet" />
+
+            <ImageButton
                 android:id="@+id/iBReport"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
-                android:background="@color/aqua"
+                android:background="@android:color/holo_orange_dark"
                 android:scaleType="fitXY"
                 app:srcCompat="@drawable/addtoilet" />
 
             <ImageButton
-                android:id="@+id/Main_FooterSpacer1"
+                android:id="@+id/Main_FooterSpacer2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -117,9 +138,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
-                android:background="@color/aqua"
+                android:background="@android:color/holo_orange_dark"
                 android:scaleType="fitXY"
-                app:srcCompat="@drawable/gear" />
+                app:srcCompat="@drawable/about" />
 
         </LinearLayout>
 

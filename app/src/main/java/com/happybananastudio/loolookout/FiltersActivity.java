@@ -45,7 +45,7 @@ public class FiltersActivity extends Activity {
         handleClearFiltersButton();
     }
     private void handleMinimizeButton(){
-        Button minimize = (Button) findViewById(R.id.Filter_b_Minimize);
+        Button minimize = (Button) findViewById(R.id.Filter_b_SaveFilters);
         minimize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
