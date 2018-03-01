@@ -57,12 +57,11 @@ public class ReportActivity extends Activity {
             double lng = b.getDouble("lng");
             String zipCode = getZipCode(lat, lng);
             latLng = new LatLng(lat, lng);
-            String tVContent = "Zip Code: " + zipCode + "\n" + latLng.toString();
+            String tVContent = "Zip Code: " + zipCode + "\nLat/Lng: " + roundDouble(latLng.latitude) + "/" + roundDouble(latLng.longitude);
             TextView tVLocation = (TextView) findViewById(R.id.Report_tV_Location);
             tVLocation.setText(tVContent);
         }
     }
-
     private void handleWidgets(){
         handleButtons();
         handleGenderRadioGroup();
@@ -248,7 +247,7 @@ public class ReportActivity extends Activity {
     }
 
     private String roundDouble( Double n ){
-        DecimalFormat dF = new DecimalFormat("#.########");
+        DecimalFormat dF = new DecimalFormat("#.#######");
         return dF.format(n);
     }
 
