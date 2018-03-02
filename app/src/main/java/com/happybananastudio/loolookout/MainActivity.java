@@ -261,11 +261,45 @@ public class MainActivity extends AppCompatActivity
     private void startComplainActivity(){
         if( selectedMarker != null ) {
             infoWindowData info = (infoWindowData) selectedMarker.getTag();
-            // TODO
-            // Deduct report count for the selected marker and then handle if it is at 0
+            double targetLat = info.getLatLng().latitude;
+            double targetLng = info.getLatLng().longitude;
+            double centerLat = mLastKnownLocation.getLatitude();
+            double centerLng = mLastKnownLocation.getLongitude();
+            String gender = String.valueOf(possibleGender.indexOf(info.getGender()));
+            float distance = distanceBetween2LatLngs(centerLat, centerLng, targetLat, targetLng);
+            final String targetKey = (targetLat + "," + targetLng + ":" + gender).replace(".", "_");
+            if( distance < MAX_DISTANCE){
+                toastThis("WITHIN DISTANCE " + String.valueOf(distance));
+                mDatabase.child(zipCode).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
+                        for( DataSnapshot dsChild : dsChildData){
+                            String key = dsChild.getKey();
+                            Log.d("Dec this", key + " " + targetKey);
+                            String value = dsChild.getValue(String.class);
+                            String[] valueFeatures = value.split(":");
+                            int reportCount = Integer.valueOf(valueFeatures[valueFeatures.length - 1]) - 1;
+                            if( key.equals(targetKey)){
+                                Log.d("Dec this", String.valueOf(reportCount));
+                                if( reportCount < 1 ){
+                                    mDatabase.child(zipCode).child(key).removeValue();
+                                    loadPostalRestrooms();
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
+            }
+            else{
+                dialogError("File Complaint Error", "You are over" + String.valueOf(distance) + " meters away from the restroom you wish to file a complaint on.");
+            }
         }
         else{
-            dialogError("No Selected Marker", "There is no selected marker to file a complaint about.\nPlease select a marker to file a complaint on.");
+            dialogError("No Selected Restroom", "There is no selected Restroom to file a complaint about.\nPlease select a Restroom to file a complaint on.");
         }
     }
     private void startReportActivity(){
@@ -322,6 +356,7 @@ public class MainActivity extends AppCompatActivity
         Double lng = mLastKnownLocation.getLongitude();
 
         zipCode = getZipCode(lat, lng);
+        clearRestroomsOnMap();
         getRestroomInfoFromDB(mDatabase.child(zipCode));
     }
     private void getRestroomInfoFromDB(DatabaseReference dbRef){
@@ -333,17 +368,39 @@ public class MainActivity extends AppCompatActivity
                 for( DataSnapshot dsChild : dsChildData){
                     String key = dsChild.getKey().replace("_",".");
                     String value = dsChild.getValue(String.class);
+                    Log.d("Filters", "|||"+filters);
                     //TODO
                     // Handle the filters here in an if statement. Pretty straight forward i would think :S
                     String markerInfo = key+":"+value;
-                    addMarker(markerInfo);
-                    c++;
+                    if( passesFilters(markerInfo) ) {
+                        addMarker(markerInfo);
+                        c++;
+                    }
                 }
                 Log.d("Rest Count ", Integer.toString(c));
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         });
+    }
+    private boolean passesFilters( String markerInfo ){
+        boolean pass = true;
+
+        String[] filterParts = filters.split(":");
+        String[] markerParts = markerInfo.split(":");
+
+        int len = filterParts.length;
+
+        Log.d("Lens", Integer.toString(len) + " " + Integer.toString(markerParts.length));
+        Log.d("Cont", filters + " " + markerInfo);
+        for( int i = 0; i < len; ++i ){
+            Log.d(Integer.toString(i), filterParts[i] + " " + markerParts[i+1]);
+        }
+
+        return pass;
+    }
+    private void clearRestroomsOnMap(){
+        mMap.clear();
     }
 
     // The Original Code From The Template
@@ -437,9 +494,8 @@ public class MainActivity extends AppCompatActivity
                         String targetGender = listOfTargetFeatures[1];
                         double targetLat = Double.valueOf(targetLatLng[0]);
                         double targetLng = Double.valueOf(targetLatLng[1]);
-                        current = withinMaxDistance(centerLat, centerLng, targetLat, targetLng);
+                        current = distanceBetween2LatLngs(centerLat, centerLng, targetLat, targetLng);
 
-                        Log.d("Genders", reportGender + " " + targetGender);
                         if (nearest > current && reportGender.equals(targetGender)) {
                             nearest = current;
                             reportCount = String.valueOf(Integer.valueOf(listOfTargetFeatures[8]) + 1);
@@ -530,11 +586,9 @@ public class MainActivity extends AppCompatActivity
         String key = reportCoordinates + ":" + reportGender;
         key = key.replace(".","_");
         String value = featureString +":1";
-        Log.d("NEW","Key->" + key + "///" + "Value->" + value);
-        Log.d("Marker",key + value);
         mDatabase.child(zipCode).child(key).setValue(value);
     }
-    private float withinMaxDistance(double centerLat, double centerLng, double pointLat, double pointLng){
+    private float distanceBetween2LatLngs(double centerLat, double centerLng, double pointLat, double pointLng){
         float[] results = new float[1];
         Location.distanceBetween(centerLat, centerLng, pointLat, pointLng, results);
         float distanceInMeters = results[0];
@@ -589,9 +643,6 @@ public class MainActivity extends AppCompatActivity
                     break;
                 case FILTERS_ACTIVITY:
                     filters = data.getStringExtra("filters");
-                    // TODO
-                    // Remove all the markers that are visible
-                    //mMap.clear();
                     loadPostalRestrooms();
                     break;
                 case REPORT_ACTIVITY:
