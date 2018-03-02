@@ -17,6 +17,9 @@
     <string name="new_one">New</string>
     <string name="exist_one">Existing</string>
 
+    <string name="cannot_find">I cannot find it</string>
+    <string name="look_more">I will look some more</string>
+
     <string name="minimize">Minimize Window</string>
     <string name="clear">Clear Filters</string>
     <string name="save">Save Filters</string>

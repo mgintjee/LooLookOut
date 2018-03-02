@@ -40,14 +40,18 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringJoiner;
@@ -74,7 +78,7 @@ public class MainActivity extends AppCompatActivity
                             "6:00 pm","7:00 pm","8:00 pm","9:00 pm","10:00 pm","11:00 pm"));
     private String filters = "";
     private Marker selectedMarker = null;
-    private boolean newReport = false;
+    private boolean newReport = false, newComplaint = false;
 
 
     private int MAX_DISTANCE = 25;
@@ -237,7 +241,7 @@ public class MainActivity extends AppCompatActivity
         iBComplain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startComplainActivity();
+                startComplaintActivity();
             }
         });
         iBReport.setOnClickListener(new View.OnClickListener() {
@@ -258,7 +262,8 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(thisContext, FiltersActivity.class);
         startActivityForResult(intent, FILTERS_ACTIVITY);
     }
-    private void startComplainActivity(){
+    private void startComplaintActivity(){
+        newComplaint = true;
         if( selectedMarker != null ) {
             infoWindowData info = (infoWindowData) selectedMarker.getTag();
             double targetLat = info.getLatLng().latitude;
@@ -269,23 +274,17 @@ public class MainActivity extends AppCompatActivity
             float distance = distanceBetween2LatLngs(centerLat, centerLng, targetLat, targetLng);
             final String targetKey = (targetLat + "," + targetLng + ":" + gender).replace(".", "_");
             if( distance < MAX_DISTANCE){
-                toastThis("WITHIN DISTANCE " + String.valueOf(distance));
-                mDatabase.child(zipCode).addValueEventListener(new ValueEventListener() {
+                mDatabase.child(zipCode).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
                         for( DataSnapshot dsChild : dsChildData){
                             String key = dsChild.getKey();
-                            Log.d("Dec this", key + " " + targetKey);
                             String value = dsChild.getValue(String.class);
                             String[] valueFeatures = value.split(":");
                             int reportCount = Integer.valueOf(valueFeatures[valueFeatures.length - 1]) - 1;
-                            if( key.equals(targetKey)){
-                                Log.d("Dec this", String.valueOf(reportCount));
-                                if( reportCount < 1 ){
-                                    mDatabase.child(zipCode).child(key).removeValue();
-                                    loadPostalRestrooms();
-                                }
+                            if( key.equals(targetKey) && selectedMarker != null && newComplaint ){
+                                dialogConfirmCancelNewComplaint(targetKey, reportCount, valueFeatures);
                                 break;
                             }
                         }
@@ -301,6 +300,17 @@ public class MainActivity extends AppCompatActivity
         else{
             dialogError("No Selected Restroom", "There is no selected Restroom to file a complaint about.\nPlease select a Restroom to file a complaint on.");
         }
+    }
+    private String joinListByDelimiter( String[] list, String delim){
+        StringBuilder s = new StringBuilder("");
+
+        for( int i = 0; i < list.length - 1; ++i ){
+            s.append(list[i]);
+            s.append(delim);
+        }
+        s.append(list[list.length - 1]);
+
+        return s.toString();
     }
     private void startReportActivity(){
         toastThis("Reporting Restroom");
@@ -322,7 +332,8 @@ public class MainActivity extends AppCompatActivity
 
                 if(marker.isInfoWindowShown()) {
                     marker.hideInfoWindow();
-                } else {
+                }
+                else {
                     marker.showInfoWindow();
                 }
                 return false;
@@ -332,7 +343,7 @@ public class MainActivity extends AppCompatActivity
     private void toastThis(String message){
         Toast.makeText(thisContext,
                 message,
-                Toast.LENGTH_LONG).show();
+                Toast.LENGTH_SHORT).show();
     }
 
     public Bitmap resizeMapIcons(String iconName){
@@ -360,7 +371,7 @@ public class MainActivity extends AppCompatActivity
         getRestroomInfoFromDB(mDatabase.child(zipCode));
     }
     private void getRestroomInfoFromDB(DatabaseReference dbRef){
-        dbRef.addValueEventListener(new ValueEventListener() {
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
@@ -368,13 +379,15 @@ public class MainActivity extends AppCompatActivity
                 for( DataSnapshot dsChild : dsChildData){
                     String key = dsChild.getKey().replace("_",".");
                     String value = dsChild.getValue(String.class);
-                    Log.d("Filters", "|||"+filters);
-                    //TODO
-                    // Handle the filters here in an if statement. Pretty straight forward i would think :S
+                    Log.d("Filters", "|"+filters+"|");
                     String markerInfo = key+":"+value;
                     if( passesFilters(markerInfo) ) {
+                        Log.d("Filter", "True");
                         addMarker(markerInfo);
                         c++;
+                    }
+                    else {
+                        Log.d("Filter", "False");
                     }
                 }
                 Log.d("Rest Count ", Integer.toString(c));
@@ -386,18 +399,46 @@ public class MainActivity extends AppCompatActivity
     private boolean passesFilters( String markerInfo ){
         boolean pass = true;
 
-        String[] filterParts = filters.split(":");
-        String[] markerParts = markerInfo.split(":");
+        if( !filters.equals("")) {
+            String[] filterParts = filters.split(":");
+            String[] markerParts = markerInfo.split(":");
 
-        int len = filterParts.length;
+            int len = filterParts.length;
 
-        Log.d("Lens", Integer.toString(len) + " " + Integer.toString(markerParts.length));
-        Log.d("Cont", filters + " " + markerInfo);
-        for( int i = 0; i < len; ++i ){
-            Log.d(Integer.toString(i), filterParts[i] + " " + markerParts[i+1]);
+            Log.d("Lens", Integer.toString(len) + " " + Integer.toString(markerParts.length));
+            Log.d("Cont", filters + " " + markerInfo);
+
+            for (int i = 0; i < 5; ++i) {
+                Log.d("Compare", filterParts[i] + " " + markerParts[i+1]);
+                if( !filterParts[i].equals(markerParts[i+1]) && !filterParts[i].equals("0")){
+                    Log.d("FAILED", filterParts[i] + " " + markerParts[i+1]);
+                    pass = false;
+                }
+            }
+
+            if( !openNow( markerParts[5])){
+                pass = false;
+            }
+
+            if( !hasAmenities( markerParts[6])){
+                pass = false;
+            }
         }
-
         return pass;
+    }
+    private boolean openNow( String time ){
+        boolean flag = true;
+
+        Log.d("Time", time);
+
+        return flag;
+    }
+    private boolean hasAmenities( String amenities ){
+        boolean flag = true;
+
+        Log.d("Amenities", amenities);
+
+        return flag;
     }
     private void clearRestroomsOnMap(){
         mMap.clear();
@@ -504,7 +545,6 @@ public class MainActivity extends AppCompatActivity
                             nearRestrooms++;
                         }
                     }
-
                     if (exists) {
                         dialogConfirmCancelNewRestroom(oldKey, reportCoordinates + ":" + reportGender, featureString, Integer.valueOf(reportGender), nearRestrooms, reportCount);
                     } else {
@@ -518,6 +558,44 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         }
+    }
+    private void dialogConfirmCancelNewComplaint(final String key, final int reportCount, final String[] values){
+        AlertDialog.Builder builder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(thisContext, R.style.AlertDialogStyle);
+        } else {
+            builder = new AlertDialog.Builder(thisContext);
+        }
+
+        String message = "Are you sure you cannot find this restroom within " + String.valueOf(MAX_DISTANCE) + " meters of your location?";
+
+        builder.setTitle("Submitting a New Complaint")
+                .setMessage(message)
+                .setPositiveButton(R.string.cannot_find, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectedMarker = null;
+                        newComplaint = false;
+                        //handleAbsentRestroom(newKey + ":" + features);
+                        if( reportCount < 1 ){
+                            mDatabase.child(zipCode).child(key).removeValue();
+                        }
+                        else{
+                            values[values.length - 1 ] = String.valueOf(reportCount);
+                            String value = joinListByDelimiter(values, ":");
+                            Log.d("New Val", value);
+                            mDatabase.child(zipCode).child(key).setValue(value);
+                        }
+                        toastThis("Sending Complaint for Restroom");
+                    }
+                })
+                .setNegativeButton(R.string.look_more, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        toastThis("Cancelling Complaint for Restroom");
+                    }
+                })
+                .show();
+
     }
     private void dialogConfirmCancelNewRestroom(final String oldKey, final String newKey, final String features, int gender, int restroomCount, final String reportCount){
         AlertDialog.Builder builder;
@@ -534,7 +612,7 @@ public class MainActivity extends AppCompatActivity
                 .setMessage(message)
                 .setPositiveButton(R.string.new_one, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        handleAbsentRestroom(newKey + features);
+                        handleAbsentRestroom(newKey + ":" + features);
                         toastThis("Sending Report for New Restroom");
                     }
                 })
@@ -586,6 +664,9 @@ public class MainActivity extends AppCompatActivity
         String key = reportCoordinates + ":" + reportGender;
         key = key.replace(".","_");
         String value = featureString +":1";
+        Log.d("New Rest", features );
+        Log.d("New Key", key );
+        Log.d("New Val", value);
         mDatabase.child(zipCode).child(key).setValue(value);
     }
     private float distanceBetween2LatLngs(double centerLat, double centerLng, double pointLat, double pointLng){
