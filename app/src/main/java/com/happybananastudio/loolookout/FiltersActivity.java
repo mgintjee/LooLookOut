@@ -20,8 +20,8 @@ import java.util.Arrays;
 
 public class FiltersActivity extends Activity {
     private final ArrayList<String> possibleClean = new ArrayList<>(
-            Arrays.asList("N/A", "At Least Very Dirty", "At Least Dirty", "At Least Neutral", "At Least Clean", "At Least Very Clean" ));
-    private int gender = 0, size = 0, clean = 0, traffic = 0, access = 0;
+            Arrays.asList("At Least Very Dirty", "At Least Dirty", "At Least Neutral", "At Least Clean", "At Least Very Clean", "N/A"));
+    private int gender = 4, size = 4, clean = 5, traffic = 3, access = 3;
     private ArrayList<Integer> amenities = new ArrayList<>();
     Context thisContext = this;
 
@@ -91,7 +91,7 @@ public class FiltersActivity extends Activity {
 
                 genderGroup.check(R.id.Filter_rB_NA_gender);
                 sizeGroup.check(R.id.Filter_rB_NA_size);
-                cleanSeekBar.setProgress(0);
+                cleanSeekBar.setProgress(possibleClean.size()-1);
                 trafficGroup.check(R.id.Filter_rB_NA_traffic);
                 accessGroup.check(R.id.Filter_rB_NA_access);
 
@@ -129,6 +129,7 @@ public class FiltersActivity extends Activity {
     }
     private void handleCleanSeekBar(){
         final SeekBar cleanSeekBar = (SeekBar) findViewById(R.id.Filter_sB_Clean);
+
         cleanSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

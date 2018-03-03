@@ -273,6 +273,7 @@ public class MainActivity extends AppCompatActivity
             String gender = String.valueOf(possibleGender.indexOf(info.getGender()));
             float distance = distanceBetween2LatLngs(centerLat, centerLng, targetLat, targetLng);
             final String targetKey = (targetLat + "," + targetLng + ":" + gender).replace(".", "_");
+
             if( distance < MAX_DISTANCE){
                 mDatabase.child(zipCode).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -294,7 +295,7 @@ public class MainActivity extends AppCompatActivity
                 });
             }
             else{
-                dialogError("File Complaint Error", "You are over" + String.valueOf(distance) + " meters away from the restroom you wish to file a complaint on.");
+                dialogError("File Complaint Error", "You are over " + String.valueOf(distance) + " meters away from the restroom you wish to file a complaint on.\nYou need to be within " + String.valueOf(MAX_DISTANCE) + " meters of a restroom to file a complaint on it.");
             }
         }
         else{
@@ -379,15 +380,10 @@ public class MainActivity extends AppCompatActivity
                 for( DataSnapshot dsChild : dsChildData){
                     String key = dsChild.getKey().replace("_",".");
                     String value = dsChild.getValue(String.class);
-                    Log.d("Filters", "|"+filters+"|");
                     String markerInfo = key+":"+value;
                     if( passesFilters(markerInfo) ) {
-                        Log.d("Filter", "True");
                         addMarker(markerInfo);
                         c++;
-                    }
-                    else {
-                        Log.d("Filter", "False");
                     }
                 }
                 Log.d("Rest Count ", Integer.toString(c));
@@ -408,38 +404,89 @@ public class MainActivity extends AppCompatActivity
             Log.d("Lens", Integer.toString(len) + " " + Integer.toString(markerParts.length));
             Log.d("Cont", filters + " " + markerInfo);
 
-            for (int i = 0; i < 5; ++i) {
+            for (int i = 0; i < len; ++i) {
                 Log.d("Compare", filterParts[i] + " " + markerParts[i+1]);
-                if( !filterParts[i].equals(markerParts[i+1]) && !filterParts[i].equals("0")){
-                    Log.d("FAILED", filterParts[i] + " " + markerParts[i+1]);
-                    pass = false;
-                }
             }
 
-            if( !openNow( markerParts[5])){
-                pass = false;
-            }
+            pass = sameGender( filterParts[0], markerParts[1]) && sameSize( filterParts[1], markerParts[2]) && atLeastClean( filterParts[2], markerParts[3]) && sameTraffic( filterParts[3], markerParts[4]) && sameAccess(filterParts[4], markerParts[5]) && openNow( markerParts[6]) && hasAmenities( markerParts[7]);
 
-            if( !hasAmenities( markerParts[6])){
-                pass = false;
-            }
         }
         return pass;
     }
+    private boolean sameGender(String filter, String target){
+        boolean pass = true;
+
+        if( !filter.equals(target) && !filter.equals("4")){
+            Log.d("Gender", "fail");
+            pass = false;
+        }
+
+        return pass;
+    }
+    private boolean sameSize(String filter, String target){
+        boolean pass = true;
+        int min = Integer.valueOf(filter);
+        int tar = Integer.valueOf(target);
+
+        if( min != tar - 1 && min !=  4){
+            Log.d("Size", "fail");
+            pass = false;
+        }
+
+        return pass;
+    }
+    private boolean atLeastClean(String filter, String target){
+        boolean pass = true;
+        int min = Integer.valueOf(filter);
+        int tar = Integer.valueOf(target);
+
+        if( min > tar && min !=  5){
+            Log.d("Clean", "fail");
+            pass = false;
+        }
+
+        return pass;
+    }
+    private boolean sameTraffic(String filter, String target){
+        boolean pass = true;
+
+        int min = Integer.valueOf(filter);
+        int tar = Integer.valueOf(target);
+
+        if( min != tar - 1 && min !=  3){
+            Log.d("Traffic", "fail");
+            pass = false;
+        }
+
+        return pass;
+    }
+    private boolean sameAccess(String filter, String target){
+        boolean pass = true;
+        int min = Integer.valueOf(filter);
+        int tar = Integer.valueOf(target);
+
+        if( min != tar - 1 && min !=  3){
+            Log.d("Access", "fail");
+            pass = false;
+        }
+
+        return pass;
+    }
     private boolean openNow( String time ){
-        boolean flag = true;
+        boolean pass = true;
 
         Log.d("Time", time);
 
-        return flag;
+        return pass;
     }
     private boolean hasAmenities( String amenities ){
-        boolean flag = true;
+        boolean pass = true;
 
         Log.d("Amenities", amenities);
 
-        return flag;
+        return pass;
     }
+
     private void clearRestroomsOnMap(){
         mMap.clear();
     }
@@ -586,6 +633,7 @@ public class MainActivity extends AppCompatActivity
                             Log.d("New Val", value);
                             mDatabase.child(zipCode).child(key).setValue(value);
                         }
+                        getDeviceLocation();
                         toastThis("Sending Complaint for Restroom");
                     }
                 })
@@ -724,16 +772,18 @@ public class MainActivity extends AppCompatActivity
                     break;
                 case FILTERS_ACTIVITY:
                     filters = data.getStringExtra("filters");
-                    loadPostalRestrooms();
+                    //loadPostalRestrooms();
                     break;
                 case REPORT_ACTIVITY:
                     String features = data.getStringExtra("features");
                     newReport = true;
                     handleRestroomReport(features);
-                    loadPostalRestrooms();
+                    //loadPostalRestrooms();
                     break;
 
             }
+            getDeviceLocation();
         }
+        selectedMarker = null;
     }
 }

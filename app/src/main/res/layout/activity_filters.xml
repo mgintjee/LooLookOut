@@ -45,15 +45,6 @@
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/Filter_rB_NA_gender"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="@string/none"
-                        android:textAlignment="textStart"
-                        android:textSize="14sp" />
-
-                    <RadioButton
                         android:id="@+id/Filter_rB_Inclusive"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -88,6 +79,15 @@
                         android:text="@string/family"
                         android:textAlignment="textStart"
                         android:textSize="14sp" />
+
+                    <RadioButton
+                        android:id="@+id/Filter_rB_NA_gender"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="@string/none"
+                        android:textAlignment="textStart"
+                        android:textSize="14sp" />
                 </RadioGroup>
 
             </LinearLayout>
@@ -110,15 +110,6 @@
                     android:layout_height="wrap_content"
                     android:checkedButton="@+id/Filter_rB_NA_size"
                     android:orientation="horizontal">
-
-                    <RadioButton
-                        android:id="@+id/Filter_rB_NA_size"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="@string/none"
-                        android:textAlignment="textStart"
-                        android:textSize="14sp" />
 
                     <RadioButton
                         android:id="@+id/Filter_rB_Single"
@@ -155,6 +146,15 @@
                         android:text="@string/large"
                         android:textAlignment="textStart"
                         android:textSize="14sp" />
+
+                    <RadioButton
+                        android:id="@+id/Filter_rB_NA_size"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="@string/none"
+                        android:textAlignment="textStart"
+                        android:textSize="14sp" />
                 </RadioGroup>
 
             </LinearLayout>
@@ -184,7 +184,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:max="5"
-                    android:progress="0" />
+                    android:progress="5" />
 
             </LinearLayout>
 
@@ -206,15 +206,6 @@
                     android:layout_height="wrap_content"
                     android:checkedButton="@+id/Filter_rB_NA_traffic"
                     android:orientation="horizontal">
-
-                    <RadioButton
-                        android:id="@+id/Filter_rB_NA_traffic"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="@string/none"
-                        android:textAlignment="textStart"
-                        android:textSize="14sp" />
 
                     <RadioButton
                         android:id="@+id/Filter_rB_Low"
@@ -243,6 +234,15 @@
                         android:textAlignment="textStart"
                         android:textSize="14sp" />
 
+                    <RadioButton
+                        android:id="@+id/Filter_rB_NA_traffic"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="@string/none"
+                        android:textAlignment="textStart"
+                        android:textSize="14sp" />
+
                 </RadioGroup>
 
             </LinearLayout>
@@ -265,15 +265,6 @@
                     android:layout_height="wrap_content"
                     android:checkedButton="@+id/Filter_rB_NA_access"
                     android:orientation="horizontal">
-
-                    <RadioButton
-                        android:id="@+id/Filter_rB_NA_access"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="@string/none"
-                        android:textAlignment="textStart"
-                        android:textSize="14sp" />
 
                     <RadioButton
                         android:id="@+id/Filter_rB_Public"
@@ -299,6 +290,15 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:text="@string/privateUse"
+                        android:textAlignment="textStart"
+                        android:textSize="14sp" />
+
+                    <RadioButton
+                        android:id="@+id/Filter_rB_NA_access"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="@string/none"
                         android:textAlignment="textStart"
                         android:textSize="14sp" />
 
