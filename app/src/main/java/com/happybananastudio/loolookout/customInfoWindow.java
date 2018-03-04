@@ -2,6 +2,7 @@ package com.happybananastudio.loolookout;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -9,6 +10,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
+
+import java.util.Calendar;
 
 /**
  * Created by mgint on 2/9/2018.
@@ -39,7 +42,7 @@ public class customInfoWindow implements GoogleMap.InfoWindowAdapter {
         TextView tVAccess = (TextView) view.findViewById(R.id.tV_Access);
         TextView tVClosing = (TextView) view.findViewById(R.id.tV_Closing);
         TextView tVAmenities = (TextView) view.findViewById(R.id.tV_Amenities);
-        TextView tVVoteCounts = (TextView) view.findViewById(R.id.tV_VoteCount);
+        TextView tVReportInfo = (TextView) view.findViewById(R.id.tV_ReportInfo);
 
         String gender = info.getGender();
         String size = info.getSize();
@@ -50,7 +53,9 @@ public class customInfoWindow implements GoogleMap.InfoWindowAdapter {
         int count = info.getAmenityCount();
         String spacer = String.format("%0" + count + "d", 0).replace("0", "\n");
         String amenities = info.getAmenities();
-        String voteCount = info.getVoteCount() + spacer;
+        String lastDate = info.getLastDate();
+        String voteCount = String.valueOf(info.getVoteCount());
+        lastDate = voteCount + " reports\nLast Report: " + lastDate + spacer;
 
         tVGender.setText(gender);
         tVSize.setText(size);
@@ -59,15 +64,9 @@ public class customInfoWindow implements GoogleMap.InfoWindowAdapter {
         tVAccess.setText(access);
         tVClosing.setText(closing);
         tVAmenities.setText(amenities);
-        tVVoteCounts.setText(voteCount);
+        tVReportInfo.setText(lastDate);
 
         return view;
-    }
-
-    private void toastThis(String message){
-        Toast.makeText(context,
-                message,
-                Toast.LENGTH_SHORT).show();
     }
 }
 

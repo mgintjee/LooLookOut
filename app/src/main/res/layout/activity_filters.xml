@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/Filter_header"
-        android:layout_above="@id/Filter_b_SaveFilters">
+        android:layout_above="@id/lL_Footer">
 
         <LinearLayout
             android:layout_width="match_parent"

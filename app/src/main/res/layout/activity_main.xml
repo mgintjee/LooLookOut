@@ -88,7 +88,7 @@
                 android:background="@color/colorAccent"
                 android:scaleType="fitXY"
                 android:visibility="invisible"
-                app:srcCompat="@drawable/addtoilet" />
+                app:srcCompat="@drawable/add_toilet" />
 
             <ImageButton
                 android:id="@+id/iBComplain"
@@ -98,7 +98,7 @@
                 android:adjustViewBounds="true"
                 android:background="@android:color/holo_orange_dark"
                 android:scaleType="fitXY"
-                app:srcCompat="@drawable/reporttoilet" />
+                app:srcCompat="@drawable/report_toilet" />
 
             <ImageButton
                 android:id="@+id/Main_FooterSpacer1"
@@ -109,7 +109,7 @@
                 android:background="@color/colorAccent"
                 android:scaleType="fitXY"
                 android:visibility="invisible"
-                app:srcCompat="@drawable/addtoilet" />
+                app:srcCompat="@drawable/add_toilet" />
 
             <ImageButton
                 android:id="@+id/iBReport"
@@ -119,7 +119,7 @@
                 android:adjustViewBounds="true"
                 android:background="@android:color/holo_orange_dark"
                 android:scaleType="fitXY"
-                app:srcCompat="@drawable/addtoilet" />
+                app:srcCompat="@drawable/add_toilet" />
 
             <ImageButton
                 android:id="@+id/Main_FooterSpacer2"
@@ -130,7 +130,7 @@
                 android:background="@color/colorAccent"
                 android:scaleType="fitXY"
                 android:visibility="invisible"
-                app:srcCompat="@drawable/addtoilet" />
+                app:srcCompat="@drawable/add_toilet" />
 
             <ImageButton
                 android:id="@+id/iBAbout"

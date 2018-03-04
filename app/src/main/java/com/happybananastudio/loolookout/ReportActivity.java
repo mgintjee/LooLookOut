@@ -7,6 +7,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -112,7 +114,15 @@ public class ReportActivity extends Activity {
                 for( int i = 0; i < amenities.size() - 1; ++i ){
                     features.append(amenities.get(i)).append(",");
                 }
-                features.append(amenities.get(amenities.size() - 1));
+
+                Calendar c = Calendar.getInstance();
+                int day = c.get(Calendar.DAY_OF_MONTH);
+                int year = c.get(Calendar.YEAR);
+                int month = c.get(Calendar.MONTH) + 1;
+                String date = String.valueOf(month) + "/" + String.valueOf(day) + "/" + String.valueOf(year);
+                features.append(amenities.get(amenities.size() - 1)).append(":");
+                features.append(getCurrentDate());
+
                 String featuresString = features.toString();
                 intent.putExtra("features", featuresString);
                 finish();
@@ -256,6 +266,17 @@ public class ReportActivity extends Activity {
         Toast.makeText(thisContext,
                 message,
                 Toast.LENGTH_LONG).show();
+    }
+    private String getCurrentDate(){
+        Calendar c = Calendar.getInstance();
+
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH) + 1;
+
+        String date = String.valueOf(month) + "/" + String.valueOf(day) + "/" + String.valueOf(year);
+
+        return date;
     }
 
     @Override

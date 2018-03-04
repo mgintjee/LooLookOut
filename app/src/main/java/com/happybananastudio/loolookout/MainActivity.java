@@ -51,6 +51,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -165,7 +166,8 @@ public class MainActivity extends AppCompatActivity
         accessIndex = Integer.valueOf(infoParts[5]);
         closingIndex = Integer.valueOf(infoParts[6]);
         amenitiesIndices = infoParts[7];
-        voteCount = Integer.valueOf(infoParts[8]);
+        String lastDate = infoParts[8];
+        voteCount = Integer.valueOf(infoParts[9]);
 
         gender = possibleGender.get(genderIndex);
         size = possibleSize.get(sizeIndex);
@@ -195,6 +197,7 @@ public class MainActivity extends AppCompatActivity
         info.setClosing(closing);
         info.setAmenities(amenities.toString());
         info.setAmenityCount(amenityCount);
+        info.setLastDate(lastDate);
         info.setVoteCount(voteCount);
 
         customInfoWindow customInfoWindow = new customInfoWindow(this);
@@ -315,6 +318,7 @@ public class MainActivity extends AppCompatActivity
     }
     private void startReportActivity(){
         toastThis("Reporting Restroom");
+        getDeviceLocation();
         Intent intent = new Intent(thisContext, ReportActivity.class);
         intent.putExtra("lat", mLastKnownLocation.getLatitude());
         intent.putExtra("lng", mLastKnownLocation.getLongitude());
@@ -347,6 +351,17 @@ public class MainActivity extends AppCompatActivity
                 Toast.LENGTH_SHORT).show();
     }
 
+    private String getCurrentDate(){
+        Calendar c = Calendar.getInstance();
+
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH) + 1;
+
+        String date = String.valueOf(month) + "/" + String.valueOf(day) + "/" + String.valueOf(year);
+
+        return date;
+    }
     public Bitmap resizeMapIcons(String iconName){
         Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
         return Bitmap.createScaledBitmap(imageBitmap, 150, 150, false);
@@ -528,9 +543,9 @@ public class MainActivity extends AppCompatActivity
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
         } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
     private void updateLocationUI() {
@@ -586,7 +601,7 @@ public class MainActivity extends AppCompatActivity
 
                         if (nearest > current && reportGender.equals(targetGender)) {
                             nearest = current;
-                            reportCount = String.valueOf(Integer.valueOf(listOfTargetFeatures[8]) + 1);
+                            reportCount = String.valueOf(Integer.valueOf(listOfTargetFeatures[9]) + 1);
                             oldKey = dsChild.getKey();
                             exists = true;
                             nearRestrooms++;
@@ -691,18 +706,6 @@ public class MainActivity extends AppCompatActivity
                 })
                 .show();
     }
-    /*
-    private void handleExistingRestroom(String features, int reportCount){
-        String[] listOfFeatures = features.split(":");
-        String reportCoordinates = listOfFeatures[0];
-        String reportGender = listOfFeatures[1];
-        int coordinates = reportCoordinates.length();
-        String featureString = features.substring(coordinates);
-        String[] coords = reportCoordinates.split(",");
-        Log.d("Features", features);
-        Log.d(reportCoordinates + " " + reportGender, "THIS EXISTS ALREADY W/ " + String.valueOf(reportCount) + " " + String.valueOf(coordinates) + " " + reportGender + featureString + ":" + String.valueOf(reportCount));
-    }
-    */
     private void handleAbsentRestroom(String features){
         String[] listOfFeatures = features.split(":");
         String reportCoordinates = listOfFeatures[0];
@@ -772,13 +775,11 @@ public class MainActivity extends AppCompatActivity
                     break;
                 case FILTERS_ACTIVITY:
                     filters = data.getStringExtra("filters");
-                    //loadPostalRestrooms();
                     break;
                 case REPORT_ACTIVITY:
                     String features = data.getStringExtra("features");
                     newReport = true;
                     handleRestroomReport(features);
-                    //loadPostalRestrooms();
                     break;
 
             }
