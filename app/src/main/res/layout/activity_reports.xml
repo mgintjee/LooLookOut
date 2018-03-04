@@ -5,39 +5,28 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/lL_Header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:orientation="horizontal">
-
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/lL_Info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_above="@id/lL_Footer"
-        android:layout_below="@id/lL_Header">
+        android:layout_alignParentTop="true">
 
-        <LinearLayout
-            android:id="@+id/lL_Need"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
+            android:layout_height="match_parent">
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/required"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/required"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -83,7 +72,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:checkedButton="@+id/Report_rB_Inclusive"
-                            android:orientation="horizontal">
+                            android:orientation="vertical">
 
                             <RadioButton
                                 android:id="@+id/Report_rB_Inclusive"
@@ -125,26 +114,13 @@
                     </LinearLayout>
 
                 </LinearLayout>
-            </ScrollView>
-        </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/lL_Want"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/optional"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/optional"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -168,7 +144,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:checkedButton="@+id/Report_rB_NA_size"
-                            android:orientation="horizontal">
+                            android:orientation="vertical">
 
                             <RadioButton
                                 android:id="@+id/Report_rB_NA_size"
@@ -264,7 +240,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:checkedButton="@+id/Report_rB_NA_traffic"
-                            android:orientation="horizontal">
+                            android:orientation="vertical">
 
                             <RadioButton
                                 android:id="@+id/Report_rB_NA_traffic"
@@ -323,7 +299,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:checkedButton="@+id/Report_rB_NA_access"
-                            android:orientation="horizontal">
+                            android:orientation="vertical">
 
                             <RadioButton
                                 android:id="@+id/Report_rB_NA_access"
@@ -409,7 +385,7 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:orientation="horizontal">
+                            android:orientation="vertical">
 
                             <CheckBox
                                 android:id="@+id/Report_cB_Diaper"
@@ -435,8 +411,10 @@
 
                     </LinearLayout>
                 </LinearLayout>
-            </ScrollView>
-        </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
 
     </LinearLayout>
 

@@ -86,7 +86,7 @@ public class ReportActivity extends Activity {
                 Intent intent = new Intent();
 
                 setResult(RESULT_CANCELED, intent);
-                toastThis("Cancelling Report");
+                //toastThis("Cancelling Report");
                 finish();
                 overridePendingTransition(0, 0);
             }

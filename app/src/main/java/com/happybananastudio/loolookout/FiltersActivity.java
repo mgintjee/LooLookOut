@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -32,6 +33,59 @@ public class FiltersActivity extends Activity {
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         this.setFinishOnTouchOutside(false);
         handleWidgets();
+        getIntentInfo();
+    }
+    private void getIntentInfo(){
+        Intent intent = getIntent();
+        String filters = intent.getStringExtra("filters");
+        if( !filters.equals("") ){
+            String[] filterParts = filters.split(":");
+            handleGenderIntent(filterParts[0]);
+            handleSizeIntent(filterParts[1]);
+            handleCleanIntent(filterParts[2]);
+            handleTrafficIntent(filterParts[3]);
+            handleAccessIntent(filterParts[4]);
+            handleAmenitiesIntent(filterParts[5]);
+        }
+    }
+    private void handleGenderIntent(String id){
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.Filter_rG_Gender);
+        int intID = Integer.valueOf(id);
+        RadioButton radioButton = (RadioButton) radioGroup.getChildAt(intID);
+        radioButton.toggle();
+    }
+    private void handleSizeIntent(String id){
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.Filter_rG_Size);
+        int intID = Integer.valueOf(id);
+        RadioButton radioButton = (RadioButton) radioGroup.getChildAt(intID);
+        radioButton.toggle();
+    }
+    private void handleCleanIntent(String id){
+        SeekBar cleanSeekBar = (SeekBar) findViewById(R.id.Filter_sB_Clean);
+        int intID = Integer.valueOf(id);
+        cleanSeekBar.setProgress(intID);
+    }
+    private void handleTrafficIntent(String id){
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.Filter_rG_Traffic);
+        int intID = Integer.valueOf(id);
+        RadioButton radioButton = (RadioButton) radioGroup.getChildAt(intID);
+        radioButton.toggle();
+    }
+    private void handleAccessIntent(String id){
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.Filter_rG_Access);
+        int intID = Integer.valueOf(id);
+        RadioButton radioButton = (RadioButton) radioGroup.getChildAt(intID);
+        radioButton.toggle();
+    }
+    private void handleAmenitiesIntent(String id){
+        String[] filterAmenities = id.split(",");
+        for (String filterAmenity : filterAmenities) {
+            int intID = getCheckBoxId(filterAmenity);
+            if (intID != 0) {
+                CheckBox cB = (CheckBox) findViewById(intID);
+                cB.toggle();
+            }
+        }
     }
 
     private void handleWidgets(){
@@ -68,7 +122,7 @@ public class FiltersActivity extends Activity {
                 intent.putExtra("filters", filters.toString());
 
                 setResult(RESULT_OK, intent);
-                toastThis("Applying Filters");
+                //toastThis("Applying Filters");
                 finish();
                 overridePendingTransition(0, 0);
             }
@@ -203,6 +257,26 @@ public class FiltersActivity extends Activity {
                 }
             }
         });
+    }
+    private int getCheckBoxId(String stringId){
+        int id = 0;
+
+        switch (stringId){
+            case "0":
+                id = 0;
+                break;
+            case "1":
+                id = R.id.Filter_cB_Diaper;
+                break;
+            case "2":
+                id = R.id.Filter_cB_Condom;
+                break;
+            case "3":
+                id = R.id.Filter_cB_Tampon;
+                break;
+        }
+
+        return id;
     }
 
     private void toastThis(String message){

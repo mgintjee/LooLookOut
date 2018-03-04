@@ -44,28 +44,29 @@ public class customInfoWindow implements GoogleMap.InfoWindowAdapter {
         TextView tVAmenities = (TextView) view.findViewById(R.id.tV_Amenities);
         TextView tVReportInfo = (TextView) view.findViewById(R.id.tV_ReportInfo);
 
-        String gender = info.getGender();
-        String size = info.getSize();
-        String clean = info.getClean();
-        String traffic = info.getTraffic();
-        String access = info.getAccess();
-        String closing = info.getClosing();
-        int count = info.getAmenityCount();
-        String spacer = String.format("%0" + count + "d", 0).replace("0", "\n");
-        String amenities = info.getAmenities();
-        String lastDate = info.getLastDate();
-        String voteCount = String.valueOf(info.getVoteCount());
-        lastDate = voteCount + " reports\nLast Report: " + lastDate + spacer;
+        if( info != null ) {
+            String gender = info.getGender();
+            String size = info.getSize();
+            String clean = info.getClean();
+            String traffic = info.getTraffic();
+            String access = info.getAccess();
+            String closing = info.getClosing();
+            int count = info.getAmenityCount() * 2;
+            String spacer = String.format("%0" + count + "d", 0).replace("0", "\n");
+            String amenities = info.getAmenities();
+            String lastDate = info.getLastDate();
+            String voteCount = String.valueOf(info.getVoteCount());
+            lastDate = voteCount + " reports\nLast Report: " + lastDate + spacer;
 
-        tVGender.setText(gender);
-        tVSize.setText(size);
-        tVClean.setText(clean);
-        tVTraffic.setText(traffic);
-        tVAccess.setText(access);
-        tVClosing.setText(closing);
-        tVAmenities.setText(amenities);
-        tVReportInfo.setText(lastDate);
-
+            tVGender.setText(gender);
+            tVSize.setText(size);
+            tVClean.setText(clean);
+            tVTraffic.setText(traffic);
+            tVAccess.setText(access);
+            tVClosing.setText(closing);
+            tVAmenities.setText(amenities);
+            tVReportInfo.setText(lastDate);
+        }
         return view;
     }
 }

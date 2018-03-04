@@ -5,19 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/Filter_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical">
-
-    </LinearLayout>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/Filter_header"
+        android:layout_alignParentTop="true"
         android:layout_above="@id/lL_Footer">
 
         <LinearLayout
@@ -42,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checkedButton="@+id/Filter_rB_NA_gender"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <RadioButton
                         android:id="@+id/Filter_rB_Inclusive"
@@ -109,7 +100,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checkedButton="@+id/Filter_rB_NA_size"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <RadioButton
                         android:id="@+id/Filter_rB_Single"
@@ -205,7 +196,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checkedButton="@+id/Filter_rB_NA_traffic"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <RadioButton
                         android:id="@+id/Filter_rB_Low"
@@ -264,7 +255,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checkedButton="@+id/Filter_rB_NA_access"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <RadioButton
                         android:id="@+id/Filter_rB_Public"
@@ -321,7 +312,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <CheckBox
                         android:id="@+id/Filter_cB_Diaper"
