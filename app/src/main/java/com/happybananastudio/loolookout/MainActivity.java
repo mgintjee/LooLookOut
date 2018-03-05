@@ -367,7 +367,13 @@ public class MainActivity extends AppCompatActivity
 
         zipCode = getZipCode(lat, lng);
         clearRestroomsOnMap();
-        getRestroomInfoFromDB(mDatabase.child(zipCode));
+
+        if( mDatabase != null ) {
+            getRestroomInfoFromDB(mDatabase.child(zipCode));
+        }
+        else{
+            toastThisShort("Error Loading Restrooms...");
+        }
     }
     private void getRestroomInfoFromDB(DatabaseReference dbRef){
         dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -384,7 +390,7 @@ public class MainActivity extends AppCompatActivity
                         c++;
                     }
                 }
-                toastThisShort("Found " + Integer.toString(c) + " Restroom(s)");
+                toastThisShort("Found " + Integer.toString(c) + " Restroom(s) for ZipCode:" + zipCode);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -807,5 +813,10 @@ public class MainActivity extends AppCompatActivity
             getDeviceLocation();
         }
         selectedMarker = null;
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        getDeviceLocation();
     }
 }

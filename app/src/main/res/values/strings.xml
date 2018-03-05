@@ -98,7 +98,10 @@
         \nChangelog:
     </string>
     <string name="changelog">
-        > V 1.03:
+        > V 1.04(Current):
+        \n-> Prevented trying to use the database if the database wasn\'t responsive
+        \n—> Prevents crashes when the DB isn\'t ready yet
+        \n> V 1.03:
         \n-> In theory fixed an issue if the app somehow couldn\'t get the user\'s location it crashed.
         \n-> Finished implementing all the filters. (Amenities and Open or not)
         \n-> App tells the user how many restrooms it found.
