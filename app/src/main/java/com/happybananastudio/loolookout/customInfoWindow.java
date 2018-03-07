@@ -2,16 +2,11 @@ package com.happybananastudio.loolookout;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
-
-import java.util.Calendar;
 
 /**
  * Created by mgint on 2/9/2018.
@@ -51,7 +46,8 @@ public class customInfoWindow implements GoogleMap.InfoWindowAdapter {
             String traffic = info.getTraffic();
             String access = info.getAccess();
             String closing = info.getClosing();
-            int count = info.getAmenityCount() * 2;
+            int count = info.getAmenityCount();
+            count = (count > 1)?2*count:0;
             String spacer = String.format("%0" + count + "d", 0).replace("0", "\n");
             String amenities = info.getAmenities();
             String lastDate = info.getLastDate();

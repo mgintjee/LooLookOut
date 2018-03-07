@@ -64,7 +64,8 @@
     <string name="report">Report Restroom</string>
 
     <string name="aboutAppHeader">
-        > About This App:
+
+        \n> About This App:
     </string>
     <string name="aboutApp">
         -> This application was made by UC Irvine students for the course CS 125 - Next Gen Search Systems.
@@ -73,6 +74,7 @@
     </string>
 
     <string name="aboutTeamHeader">
+
         \n> About The Team:
     </string>
     <string name="aboutTeam">
@@ -87,34 +89,49 @@
     </string>
 
     <string name="plannedFeaturesHeader">
-        \nPlanned Features:
+        \n> Planned Features:
     </string>
     <string name="plannedFeatures">
-        > Accounting for which floor the restroom is on
-        \n> Update some graphics for consistency
+        -> Accounting for which floor the restroom is on
+        \n-> Update ALL graphics for consistency
+        \n-> When updating restrooms, don\'t just replace the restroom values, determine which part of the values to update.
+        \n-> Auto-refreshing the map when the user submits a report so that it will show the new restroom
+        \n—> (App refreshes the map after every minute.) Kinda does this
+
     </string>
 
     <string name="changelogHeader">
-        \nChangelog:
+
+        \n> Changelog:
     </string>
     <string name="changelog">
-        > V 1.04(Current):
-        \n-> Prevented trying to use the database if the database wasn\'t responsive
-        \n—> Prevents crashes when the DB isn\'t ready yet
-        \n> V 1.03:
-        \n-> In theory fixed an issue if the app somehow couldn\'t get the user\'s location it crashed.
-        \n-> Finished implementing all the filters. (Amenities and Open or not)
-        \n-> App tells the user how many restrooms it found.
-        \n-> Filters are saved between activities.
-        \n—> NOTE: filters are cleared when the application is closed.
-        \n-> Changed the Radio Groups to be vertical to allow for more space for the text.
-        \n-> Updated graphics to be more consistent.
+        -> V 1.06(Current):
 
-        \n\n> V 1.02:
-        \n-> Added feature to restrooms: Last Updated feature.
+        \n\n-> V 1.05:
+        \n—> App refreshes the map after every minute.
+        \n——> Unless the user is interacting with it at least once every 30 seconds.
+        \n—> Prevent (starting a report)/(filing a complaint) if the app can\'t access the user\'s location.
+        \n—> Toast Activity Gates to help users understand what is happening.
 
-        \n\n>V 1.01:
-        \n-> Beta Testing.
+        \n\n-> V 1.04:
+        \n—> Prevented trying to use the database if the database wasn\'t responsive
+        \n——> Prevents crashes when the DB isn\'t ready yet
+        \n—> On App resume it reloads the user\s location and the restrooms
+
+        \n\n-> V 1.03:
+        \n—> In theory fixed an issue if the app somehow couldn\'t get the user\'s location it crashed.
+        \n—> Finished implementing all the filters. (Amenities and Open or not)
+        \n—> App tells the user how many restrooms it found.
+        \n—> Filters are saved between activities.
+        \n——> NOTE: filters are cleared when the application is closed.
+        \n—> Changed the Radio Groups to be vertical to allow for more space for the text.
+        \n—> Updated graphics to be more consistent.
+
+        \n\n-> V 1.02:
+        \n—> Added feature to restrooms: Last Updated feature.
+
+        \n\n-> V 1.01:
+        \n—> Beta Testing.
     </string>
 
 

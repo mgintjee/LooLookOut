@@ -21,7 +21,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
@@ -52,6 +51,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity
         implements OnMapReadyCallback {
@@ -104,6 +105,10 @@ public class MainActivity extends AppCompatActivity
     private final int REPORT_ACTIVITY = 2;
     private final int ABOUT_ACTIVITY = 3;
 
+    private Timer userInactivity;
+    private Timer mapRefresh;
+    private boolean inactive = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,6 +134,11 @@ public class MainActivity extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        userInactivity = new Timer();
+        mapRefresh = new Timer();
+        setTimeIntervalForUserInactivity(30000,30000 );
+        setTimeIntervalForMapRefresh(60000,60000 );
     }
 
     // My Code
@@ -248,50 +258,53 @@ public class MainActivity extends AppCompatActivity
         });
     }
     private void startFiltersActivity(){
-        //toastThisShort("Editing Filters");
+        toastThisShort("Editing Filters");
         Intent intent = new Intent(thisContext, FiltersActivity.class);
         intent.putExtra("filters", filters);
         startActivityForResult(intent, FILTERS_ACTIVITY);
     }
     private void startComplaintActivity(){
-        //toastThisShort("Filing Complaint");
+        toastThisShort("Filing Complaint");
         newComplaint = true;
-        if( selectedMarker != null ) {
-            infoWindowData info = (infoWindowData) selectedMarker.getTag();
-            double targetLat = info.getLatLng().latitude;
-            double targetLng = info.getLatLng().longitude;
-            double centerLat = mLastKnownLocation.getLatitude();
-            double centerLng = mLastKnownLocation.getLongitude();
-            String gender = String.valueOf(possibleGender.indexOf(info.getGender()));
-            float distance = distanceBetween2LatLngs(centerLat, centerLng, targetLat, targetLng);
-            final String targetKey = (targetLat + "," + targetLng + ":" + gender).replace(".", "_");
+        getDeviceLocation(false);
+        if( mLastKnownLocation != null ) {
+            if (selectedMarker != null) {
+                infoWindowData info = (infoWindowData) selectedMarker.getTag();
+                double targetLat = info.getLatLng().latitude;
+                double targetLng = info.getLatLng().longitude;
+                double centerLat = mLastKnownLocation.getLatitude();
+                double centerLng = mLastKnownLocation.getLongitude();
+                String gender = String.valueOf(possibleGender.indexOf(info.getGender()));
+                float distance = distanceBetween2LatLngs(centerLat, centerLng, targetLat, targetLng);
+                final String targetKey = (targetLat + "," + targetLng + ":" + gender).replace(".", "_");
 
-            if( distance < MAX_DISTANCE){
-                mDatabase.child(zipCode).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
-                        for( DataSnapshot dsChild : dsChildData){
-                            String key = dsChild.getKey();
-                            String value = dsChild.getValue(String.class);
-                            String[] valueFeatures = value.split(":");
-                            int reportCount = Integer.valueOf(valueFeatures[valueFeatures.length - 1]) - 1;
-                            if( key.equals(targetKey) && selectedMarker != null && newComplaint ){
-                                dialogConfirmCancelNewComplaint(targetKey, reportCount, valueFeatures);
-                                break;
+                if (distance < MAX_DISTANCE) {
+                    mDatabase.child(zipCode).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
+                            for (DataSnapshot dsChild : dsChildData) {
+                                String key = String.valueOf(dsChild.getKey());
+                                String value = String.valueOf(dsChild.getValue(String.class));
+                                String[] valueFeatures = value.split(":");
+                                int reportCount = Integer.valueOf(valueFeatures[valueFeatures.length - 1]) - 1;
+                                if (key.equals(targetKey) && selectedMarker != null && newComplaint) {
+                                    dialogConfirmCancelNewComplaint(targetKey, reportCount, valueFeatures);
+                                    break;
+                                }
                             }
                         }
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {}
-                });
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+                } else {
+                    dialogError("File Complaint Error", "You are over " + String.valueOf(distance) + " meters away from the restroom you wish to file a complaint on.\nYou need to be within " + String.valueOf(MAX_DISTANCE) + " meters of a restroom to file a complaint on it.");
+                }
+            } else {
+                dialogError("No Selected Restroom", "There is no selected Restroom to file a complaint about.\nPlease select a Restroom to file a complaint on.");
             }
-            else{
-                dialogError("File Complaint Error", "You are over " + String.valueOf(distance) + " meters away from the restroom you wish to file a complaint on.\nYou need to be within " + String.valueOf(MAX_DISTANCE) + " meters of a restroom to file a complaint on it.");
-            }
-        }
-        else{
-            dialogError("No Selected Restroom", "There is no selected Restroom to file a complaint about.\nPlease select a Restroom to file a complaint on.");
         }
     }
     private String joinListByDelimiter( String[] list, String delim){
@@ -306,15 +319,17 @@ public class MainActivity extends AppCompatActivity
         return s.toString();
     }
     private void startReportActivity(){
-        getDeviceLocation();
-        //toastThisShort("Reporting Restroom");
-        Intent intent = new Intent(thisContext, ReportActivity.class);
-        intent.putExtra("lat", mLastKnownLocation.getLatitude());
-        intent.putExtra("lng", mLastKnownLocation.getLongitude());
-        startActivityForResult(intent, REPORT_ACTIVITY);
+        getDeviceLocation(false);
+        if( mLastKnownLocation != null ) {
+            toastThisShort("Reporting Restroom");
+            Intent intent = new Intent(thisContext, ReportActivity.class);
+            intent.putExtra("lat", mLastKnownLocation.getLatitude());
+            intent.putExtra("lng", mLastKnownLocation.getLongitude());
+            startActivityForResult(intent, REPORT_ACTIVITY);
+        }
     }
     private void startAboutActivity(){
-        //toastThisShort("About this App");
+        toastThisShort("About this App");
         Intent intent = new Intent(thisContext, AboutActivity.class);
         startActivityForResult(intent, ABOUT_ACTIVITY);
     }
@@ -372,7 +387,7 @@ public class MainActivity extends AppCompatActivity
             getRestroomInfoFromDB(mDatabase.child(zipCode));
         }
         else{
-            toastThisShort("Error Loading Restrooms...");
+            toastThisShort("Error Loading Restrooms...Try Again Later");
         }
     }
     private void getRestroomInfoFromDB(DatabaseReference dbRef){
@@ -382,15 +397,15 @@ public class MainActivity extends AppCompatActivity
                 Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
                 int c = 0;
                 for( DataSnapshot dsChild : dsChildData){
-                    String key = dsChild.getKey().replace("_",".");
-                    String value = dsChild.getValue(String.class);
+                    String key = String.valueOf(dsChild.getKey().replace("_","."));
+                    String value = String.valueOf(dsChild.getValue(String.class));
                     String markerInfo = key+":"+value;
                     if( passesFilters(markerInfo) ) {
                         addMarker(markerInfo);
                         c++;
                     }
                 }
-                toastThisShort("Found " + Integer.toString(c) + " Restroom(s) for ZipCode:" + zipCode);
+                toastThisShort("Found " + Integer.toString(c) + " Restroom(s) for ZipCode: " + zipCode);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -469,21 +484,22 @@ public class MainActivity extends AppCompatActivity
     }
     private boolean openNow( String time ){
         boolean pass = true;
-        String stringTime = possibleClosing.get(Integer.valueOf(time));
-        String currentTime = getCurrentTime();
+        if( !time.equals("0")) {
+            String stringTime = possibleClosing.get(Integer.valueOf(time));
+            String currentTime = getCurrentTime();
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm aa", Locale.getDefault());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm aa", Locale.getDefault());
 
-        try{
-            Date filterDate = dateFormat.parse(stringTime);
-            Date currentDate = dateFormat.parse(currentTime);
+            try {
+                Date filterDate = dateFormat.parse(stringTime);
+                Date currentDate = dateFormat.parse(currentTime);
 
-            if( currentDate.after(filterDate) ){
-                pass = false;
+                if (currentDate.after(filterDate)) {
+                    pass = false;
+                }
+            } catch (ParseException e) {
+                Log.d("Parse Error", stringTime + " " + currentTime);
             }
-        }
-        catch( ParseException e){
-            Log.d("Parse Error", "Beep");
         }
 
         return pass;
@@ -529,7 +545,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     // The Original Code From The Template
-    private void getDeviceLocation() {
+    private void getDeviceLocation(final boolean loadRestrooms) {
         try {
             if (mLocationPermissionGranted) {
                 Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
@@ -544,7 +560,9 @@ public class MainActivity extends AppCompatActivity
                                         new LatLng(mLastKnownLocation.getLatitude(),
                                                 mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                                 // DOES ALL THE HEAVY LIFTING HERE
-                                loadPostalRestrooms();
+                                if( loadRestrooms ) {
+                                    loadPostalRestrooms();
+                                }
                             }
                             else{
                                 toastThisShort("Error loading last known location");
@@ -616,7 +634,7 @@ public class MainActivity extends AppCompatActivity
                     float current;
 
                     for (DataSnapshot dsChild : dsChildData) {
-                        String markerInfo = (dsChild.getKey() + ":" + dsChild.getValue()).replace("_", ".");
+                        String markerInfo = (String.valueOf(dsChild.getKey() + ":" + dsChild.getValue())).replace("_", ".");
                         String[] listOfTargetFeatures = markerInfo.split(":");
                         String targetCoordinates = listOfTargetFeatures[0];
                         String[] targetLatLng = targetCoordinates.split(",");
@@ -628,7 +646,7 @@ public class MainActivity extends AppCompatActivity
                         if (nearest > current && reportGender.equals(targetGender)) {
                             nearest = current;
                             reportCount = String.valueOf(Integer.valueOf(listOfTargetFeatures[9]) + 1);
-                            oldKey = dsChild.getKey();
+                            oldKey = String.valueOf(dsChild.getKey());
                             exists = true;
                             nearRestrooms++;
                         }
@@ -674,13 +692,13 @@ public class MainActivity extends AppCompatActivity
                             Log.d("New Val", value);
                             mDatabase.child(zipCode).child(key).setValue(value);
                         }
-                        getDeviceLocation();
-                        //toastThisShort("Sending Complaint for Restroom");
+                        getDeviceLocation(true);
+                        toastThisShort("Sending Complaint for Restroom");
                     }
                 })
                 .setNegativeButton(R.string.look_more, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        //toastThisShort("Cancelling Complaint for Restroom");
+                        toastThisShort("Cancelling Complaint for Restroom");
                     }
                 })
                 .show();
@@ -702,13 +720,13 @@ public class MainActivity extends AppCompatActivity
                 .setPositiveButton(R.string.new_one, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         handleAbsentRestroom(newKey + ":" + features);
-                        //toastThisShort("Sending Report for New Restroom");
+                        toastThisShort("Sending Report for New Restroom");
                     }
                 })
                 .setNegativeButton(R.string.exist_one, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         mDatabase.child(zipCode).child(oldKey).setValue(features + ":" + reportCount);
-                        //toastThisShort("Sending Report for Existing Restroom");
+                        toastThisShort("Sending Report for Existing Restroom");
                     }
                 })
                 .setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -752,6 +770,30 @@ public class MainActivity extends AppCompatActivity
         float distanceInMeters = results[0];
         return distanceInMeters;
     }
+    private void setTimeIntervalForMapRefresh(int delay, int period){
+        mapRefresh.scheduleAtFixedRate(new TimerTask() {
+                                               @Override
+                                               public void run() {
+                                                   if (inactive) {
+                                                       getDeviceLocation(true);
+                                                   }
+                                               }
+
+                                           },
+                delay,
+                period);
+    }
+    private void setTimeIntervalForUserInactivity(int delay, int period){
+        userInactivity.scheduleAtFixedRate(new TimerTask() {
+                                               @Override
+                                               public void run() {
+                                                   inactive = true;
+                                               }
+
+                                           },
+                delay,
+                period);
+    }
 
 
     // The Original Code From The Template
@@ -783,7 +825,7 @@ public class MainActivity extends AppCompatActivity
         updateLocationUI();
 
         // Get the current location of the device and set the position of the map.
-        getDeviceLocation();
+        getDeviceLocation(true);
 
     }
     @Override
@@ -810,13 +852,18 @@ public class MainActivity extends AppCompatActivity
                     break;
 
             }
-            getDeviceLocation();
+            getDeviceLocation(true);
         }
         selectedMarker = null;
     }
     @Override
     public void onResume(){
         super.onResume();
-        getDeviceLocation();
+        getDeviceLocation(true);
+    }
+
+    @Override
+    public void onUserInteraction(){
+        inactive = false;
     }
 }
