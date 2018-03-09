@@ -105,20 +105,21 @@
         \n> Changelog:
     </string>
     <string name="changelog">
-        -> V 1.06(Current):
+        -> V 1.06 (Current):
 
         \n\n-> V 1.05:
+        \n—> Release to Production.
         \n—> App refreshes the map after every minute.
         \n——> Unless the user is interacting with it at least once every 30 seconds.
         \n—> Prevent (starting a report)/(filing a complaint) if the app can\'t access the user\'s location.
         \n—> Toast Activity Gates to help users understand what is happening.
 
-        \n\n-> V 1.04:
+        \n\n-> V 1.04: (Beta)
         \n—> Prevented trying to use the database if the database wasn\'t responsive
         \n——> Prevents crashes when the DB isn\'t ready yet
         \n—> On App resume it reloads the user\s location and the restrooms
 
-        \n\n-> V 1.03:
+        \n\n-> V 1.03: (Beta)
         \n—> In theory fixed an issue if the app somehow couldn\'t get the user\'s location it crashed.
         \n—> Finished implementing all the filters. (Amenities and Open or not)
         \n—> App tells the user how many restrooms it found.
@@ -127,10 +128,10 @@
         \n—> Changed the Radio Groups to be vertical to allow for more space for the text.
         \n—> Updated graphics to be more consistent.
 
-        \n\n-> V 1.02:
+        \n\n-> V 1.02: (Beta)
         \n—> Added feature to restrooms: Last Updated feature.
 
-        \n\n-> V 1.01:
+        \n\n-> V 1.01: (Beta)
         \n—> Beta Testing.
     </string>
 

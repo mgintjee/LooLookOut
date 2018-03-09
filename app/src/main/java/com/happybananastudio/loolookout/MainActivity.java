@@ -39,6 +39,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -284,13 +285,20 @@ public class MainActivity extends AppCompatActivity
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
                             for (DataSnapshot dsChild : dsChildData) {
-                                String key = String.valueOf(dsChild.getKey());
-                                String value = String.valueOf(dsChild.getValue(String.class));
-                                String[] valueFeatures = value.split(":");
-                                int reportCount = Integer.valueOf(valueFeatures[valueFeatures.length - 1]) - 1;
-                                if (key.equals(targetKey) && selectedMarker != null && newComplaint) {
-                                    dialogConfirmCancelNewComplaint(targetKey, reportCount, valueFeatures);
-                                    break;
+                                try {
+                                    String key = String.valueOf(dsChild.getKey());
+                                    String value = String.valueOf(dsChild.getValue(String.class));
+                                    String[] valueFeatures = value.split(":");
+                                    int reportCount = Integer.valueOf(valueFeatures[valueFeatures.length - 1]) - 1;
+                                    if (key.equals(targetKey) && selectedMarker != null && newComplaint) {
+                                        dialogConfirmCancelNewComplaint(targetKey, reportCount, valueFeatures);
+                                        break;
+                                    }
+                                }
+                                catch (DatabaseException e)
+                                {
+                                Log.d("Database Exception", e.getMessage());
+                                toastThisShort("Error Handling DB, try again later.");
                                 }
                             }
                         }
@@ -384,25 +392,32 @@ public class MainActivity extends AppCompatActivity
         clearRestroomsOnMap();
 
         if( mDatabase != null ) {
-            getRestroomInfoFromDB(mDatabase.child(zipCode));
+            getRestroomInfoFromDB();
         }
         else{
             toastThisShort("Error Loading Restrooms...Try Again Later");
         }
     }
-    private void getRestroomInfoFromDB(DatabaseReference dbRef){
-        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void getRestroomInfoFromDB(){
+        mDatabase.child(zipCode).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
                 int c = 0;
                 for( DataSnapshot dsChild : dsChildData){
-                    String key = String.valueOf(dsChild.getKey().replace("_","."));
-                    String value = String.valueOf(dsChild.getValue(String.class));
-                    String markerInfo = key+":"+value;
-                    if( passesFilters(markerInfo) ) {
-                        addMarker(markerInfo);
-                        c++;
+                    try {
+                        String key = String.valueOf(dsChild.getKey().replace("_", "."));
+                        String value = String.valueOf(dsChild.getValue(String.class));
+                        String markerInfo = key + ":" + value;
+                        if (passesFilters(markerInfo)) {
+                            addMarker(markerInfo);
+                            c++;
+                        }
+                    }
+                    catch (DatabaseException e)
+                    {
+                        Log.d("Database Exception", e.getMessage());
+                        toastThisShort("Error Handling DB, try again later.");
                     }
                 }
                 toastThisShort("Found " + Integer.toString(c) + " Restroom(s) for ZipCode: " + zipCode);
@@ -634,29 +649,36 @@ public class MainActivity extends AppCompatActivity
                     float current;
 
                     for (DataSnapshot dsChild : dsChildData) {
-                        String markerInfo = (String.valueOf(dsChild.getKey() + ":" + dsChild.getValue())).replace("_", ".");
-                        String[] listOfTargetFeatures = markerInfo.split(":");
-                        String targetCoordinates = listOfTargetFeatures[0];
-                        String[] targetLatLng = targetCoordinates.split(",");
-                        String targetGender = listOfTargetFeatures[1];
-                        double targetLat = Double.valueOf(targetLatLng[0]);
-                        double targetLng = Double.valueOf(targetLatLng[1]);
-                        current = distanceBetween2LatLngs(centerLat, centerLng, targetLat, targetLng);
+                        try {
+                            String markerInfo = (String.valueOf(dsChild.getKey() + ":" + dsChild.getValue(String.class))).replace("_", ".");
+                            String[] listOfTargetFeatures = markerInfo.split(":");
+                            String targetCoordinates = listOfTargetFeatures[0];
+                            String[] targetLatLng = targetCoordinates.split(",");
+                            String targetGender = listOfTargetFeatures[1];
+                            double targetLat = Double.valueOf(targetLatLng[0]);
+                            double targetLng = Double.valueOf(targetLatLng[1]);
+                            current = distanceBetween2LatLngs(centerLat, centerLng, targetLat, targetLng);
 
-                        if (nearest > current && reportGender.equals(targetGender)) {
-                            nearest = current;
-                            reportCount = String.valueOf(Integer.valueOf(listOfTargetFeatures[9]) + 1);
-                            oldKey = String.valueOf(dsChild.getKey());
-                            exists = true;
-                            nearRestrooms++;
+                            if (nearest > current && reportGender.equals(targetGender)) {
+                                nearest = current;
+                                reportCount = String.valueOf(Integer.valueOf(listOfTargetFeatures[9]) + 1);
+                                oldKey = String.valueOf(dsChild.getKey());
+                                exists = true;
+                                nearRestrooms++;
+                            }
+                            if (exists) {
+                                dialogConfirmCancelNewRestroom(oldKey, reportCoordinates + ":" + reportGender, featureString, Integer.valueOf(reportGender), nearRestrooms, reportCount);
+                            } else {
+                                handleAbsentRestroom(features);
+                            }
+                            newReport = false;
+                        }
+                    catch(DatabaseException e)
+                        {
+                            Log.d("Database Exception", e.getMessage());
+                            toastThisShort("Error Handling DB, try again later.");
                         }
                     }
-                    if (exists) {
-                        dialogConfirmCancelNewRestroom(oldKey, reportCoordinates + ":" + reportGender, featureString, Integer.valueOf(reportGender), nearRestrooms, reportCount);
-                    } else {
-                        handleAbsentRestroom(features);
-                    }
-                    newReport = false;
                 }
 
                 @Override
