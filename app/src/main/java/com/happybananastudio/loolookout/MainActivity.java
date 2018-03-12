@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity
             Arrays.asList("Inclusive", "Male", "Female", "Family" ));
     private final ArrayList<String> possibleSize = new ArrayList<>(
             Arrays.asList("N/A", "Single", "Small", "Medium", "Large" ));
-    private final ArrayList<String> possibleCleanliness = new ArrayList<>(
-            Arrays.asList("N/A", "0", "1", "2", "3", "4", "5" ));
+    private final ArrayList<String> possibleClean = new ArrayList<>(
+            Arrays.asList("N/A", "At Least Very Dirty", "At Least Dirty", "At Least Neutral", "At Least Clean", "At Least Very Clean"));
     private final ArrayList<String> possibleTraffic = new ArrayList<>(
             Arrays.asList("N/A", "Low",  "Some", "High"  ));
     private final ArrayList<String> possibleAccess = new ArrayList<>(
@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity
     private final int FILTERS_ACTIVITY = 1;
     private final int REPORT_ACTIVITY = 2;
     private final int ABOUT_ACTIVITY = 3;
+    private final int LOCATION_ACTIVITY = 4;
 
     private Timer userInactivity;
     private Timer mapRefresh;
@@ -133,7 +134,7 @@ public class MainActivity extends AppCompatActivity
 
         // Build the map.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.main_map);
         mapFragment.getMapAsync(this);
 
         userInactivity = new Timer();
@@ -142,7 +143,175 @@ public class MainActivity extends AppCompatActivity
         setTimeIntervalForMapRefresh(60000,60000 );
     }
 
-    // My Code
+    // Main App Methods
+    private void loadPostalRestrooms(){
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        Double lat = mLastKnownLocation.getLatitude();
+        Double lng = mLastKnownLocation.getLongitude();
+
+        zipCode = getZipCode(lat, lng);
+        clearRestroomsOnMap();
+
+        if( mDatabase != null ) {
+            getRestroomInfoFromDB();
+        }
+        else{
+            toastThisShort("Error Loading Restrooms...Try Again Later");
+        }
+    }
+    private void getRestroomInfoFromDB(){
+        mDatabase.child(zipCode).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
+                int c = 0;
+                for( DataSnapshot dsChild : dsChildData){
+                    try {
+                        String key = String.valueOf(dsChild.getKey().replace("_", "."));
+                        String value = String.valueOf(dsChild.getValue(String.class));
+                        String markerInfo = key + ":" + value;
+                        if (passesFilters(markerInfo)) {
+                            addMarker(markerInfo);
+                            c++;
+                        }
+                    }
+                    catch (DatabaseException e)
+                    {
+                        Log.d("Database Exception", e.getMessage());
+                        toastThisShort("Error Handling DB, try again later.");
+                    }
+                }
+                toastThisShort("Found " + Integer.toString(c) + " Restroom(s) for ZipCode: " + zipCode);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
+    private void clearRestroomsOnMap(){
+        mMap.clear();
+    }
+
+    // Google Maps Methods
+    private void getDeviceLocation(final boolean loadRestrooms) {
+        try {
+            if (mLocationPermissionGranted) {
+                Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful()) {
+                            // Set the map's camera position to the current location of the device.
+                            mLastKnownLocation = task.getResult();
+                            if( mLastKnownLocation != null ){
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                        new LatLng(mLastKnownLocation.getLatitude(),
+                                                mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                                // DOES ALL THE HEAVY LIFTING HERE
+                                if( loadRestrooms ) {
+                                    loadPostalRestrooms();
+                                }
+                            }
+                            else{
+                                toastThisShort("Error loading last known location");
+                            }
+                        }
+                        else {
+                            toastThisShort( "Current location is null. Using defaults.");
+                            mMap.moveCamera(CameraUpdateFactory
+                                    .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                        }
+                    }
+                });
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+    private void getLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+    private void updateLocationUI() {
+        if (mMap == null) {
+            return;
+        }
+        try {
+            if (mLocationPermissionGranted) {
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            } else {
+                mMap.setMyLocationEnabled(false);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                mLastKnownLocation = null;
+                getLocationPermission();
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
+    // Widget Methods
+    private void initializeImageButtons(){
+        iBFilter = (ImageButton) findViewById(R.id.iBFilter);
+        iBComplain = (ImageButton) findViewById(R.id.iBComplain);
+        iBReport = (ImageButton) findViewById(R.id.iBReport);
+        iBAbout = (ImageButton) findViewById(R.id.iBAbout);
+    }
+    private void setImageButtonListeners(){
+
+        iBFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startFiltersActivity();
+            }
+        });
+        iBComplain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startComplaintActivity();
+            }
+        });
+        iBReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startReportActivity();
+            }
+        });
+        iBAbout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startAboutActivity();
+            }
+        });
+    }
+    private void setMapMarkerListener(){
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                selectedMarker = marker;
+
+                if(marker.isInfoWindowShown()) {
+                    marker.hideInfoWindow();
+                }
+                else {
+                    marker.showInfoWindow();
+                }
+                return false;
+            }
+        });
+    }
+    public Bitmap resizeMapIcons(String iconName){
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
+        return Bitmap.createScaledBitmap(imageBitmap, 150, 150, false);
+    }
     private void addMarker( String Info ){
         int genderIndex, sizeIndex, cleanIndex, trafficIndex, accessIndex, closingIndex, amenityCount, voteCount;
         String gender, size, clean, traffic, access, closing, amenitiesIndices;
@@ -169,7 +338,7 @@ public class MainActivity extends AppCompatActivity
 
         gender = possibleGender.get(genderIndex);
         size = possibleSize.get(sizeIndex);
-        clean = possibleCleanliness.get(cleanIndex);
+        clean = possibleClean.get(cleanIndex);
         traffic = possibleTraffic.get(trafficIndex);
         access = possibleAccess.get(accessIndex);
         closing = possibleClosing.get(closingIndex);
@@ -225,38 +394,22 @@ public class MainActivity extends AppCompatActivity
         Marker m  = mMap.addMarker(newMarker);
         m.setTag(info);
     }
-    private void initializeImageButtons(){
-        iBFilter = (ImageButton) findViewById(R.id.iBFilter);
-        iBComplain = (ImageButton) findViewById(R.id.iBComplain);
-        iBReport = (ImageButton) findViewById(R.id.iBReport);
-        iBAbout = (ImageButton) findViewById(R.id.iBAbout);
-    }
-    private void setImageButtonListeners(){
 
-        iBFilter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startFiltersActivity();
-            }
-        });
-        iBComplain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startComplaintActivity();
-            }
-        });
-        iBReport.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startReportActivity();
-            }
-        });
-        iBAbout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startAboutActivity();
-            }
-        });
+    // Starting/Handling New Activity Methods
+    private void startReportActivity(){
+        getDeviceLocation(false);
+        if( mLastKnownLocation != null ) {
+            toastThisShort("Reporting Restroom");
+            Intent intent = new Intent(thisContext, LocationActivity.class);
+            intent.putExtra("lat", mLastKnownLocation.getLatitude());
+            intent.putExtra("lng", mLastKnownLocation.getLongitude());
+            startActivityForResult(intent, REPORT_ACTIVITY);
+        }
+    }
+    private void startAboutActivity(){
+        toastThisShort("About this App");
+        Intent intent = new Intent(thisContext, AboutActivity.class);
+        startActivityForResult(intent, ABOUT_ACTIVITY);
     }
     private void startFiltersActivity(){
         toastThisShort("Editing Filters");
@@ -297,8 +450,8 @@ public class MainActivity extends AppCompatActivity
                                 }
                                 catch (DatabaseException e)
                                 {
-                                Log.d("Database Exception", e.getMessage());
-                                toastThisShort("Error Handling DB, try again later.");
+                                    Log.d("Database Exception", e.getMessage());
+                                    toastThisShort("Error Handling DB, try again later.");
                                 }
                             }
                         }
@@ -315,117 +468,175 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-    private String joinListByDelimiter( String[] list, String delim){
-        StringBuilder s = new StringBuilder("");
+    private void handleRestroomReport(final String features ){
+        String[] listOfReportFeatures = features.split(":");
+        final String reportCoordinates = listOfReportFeatures[0];
+        final String reportGender = listOfReportFeatures[1];
+        DatabaseReference dbRef = mDatabase.child(zipCode);
+        int coordinates = reportCoordinates.length() + 3;
+        final String featureString = features.substring(coordinates);
+        String[] centerLatLng = reportCoordinates.split(",");
+        final double centerLat = Double.valueOf(centerLatLng[0]);
+        final double centerLng = Double.valueOf(centerLatLng[1]);
+        if( newReport ) {
+            dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
+                    String oldFeatureString = "";
+                    boolean exists = false;
+                    String oldKey = "";
+                    String reportCount = "1";
+                    int nearRestrooms = 0;
+                    float nearest = MAX_DISTANCE;
+                    float current;
 
-        for( int i = 0; i < list.length - 1; ++i ){
-            s.append(list[i]);
-            s.append(delim);
-        }
-        s.append(list[list.length - 1]);
+                    for (DataSnapshot dsChild : dsChildData) {
+                        try {
+                            oldFeatureString = dsChild.getValue(String.class);
+                            String markerInfo = (String.valueOf(dsChild.getKey() + ":" + oldFeatureString)).replace("_", ".");
+                            String[] listOfTargetFeatures = markerInfo.split(":");
+                            String targetCoordinates = listOfTargetFeatures[0];
+                            String[] targetLatLng = targetCoordinates.split(",");
 
-        return s.toString();
-    }
-    private void startReportActivity(){
-        getDeviceLocation(false);
-        if( mLastKnownLocation != null ) {
-            toastThisShort("Reporting Restroom");
-            Intent intent = new Intent(thisContext, ReportActivity.class);
-            intent.putExtra("lat", mLastKnownLocation.getLatitude());
-            intent.putExtra("lng", mLastKnownLocation.getLongitude());
-            startActivityForResult(intent, REPORT_ACTIVITY);
-        }
-    }
-    private void startAboutActivity(){
-        toastThisShort("About this App");
-        Intent intent = new Intent(thisContext, AboutActivity.class);
-        startActivityForResult(intent, ABOUT_ACTIVITY);
-    }
-    private void setMapMarkerListener(){
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                selectedMarker = marker;
+                            String targetGender = listOfTargetFeatures[1];
+                            double targetLat = Double.valueOf(targetLatLng[0]);
+                            double targetLng = Double.valueOf(targetLatLng[1]);
+                            current = distanceBetween2LatLngs(centerLat, centerLng, targetLat, targetLng);
 
-                if(marker.isInfoWindowShown()) {
-                    marker.hideInfoWindow();
-                }
-                else {
-                    marker.showInfoWindow();
-                }
-                return false;
-            }
-        });
-    }
-    private void toastThisShort(String message){
-        Toast.makeText(thisContext,
-                message,
-                Toast.LENGTH_SHORT).show();
-    }
-    private void toastThisLong(String message){
-        Toast.makeText(thisContext,
-                message,
-                Toast.LENGTH_LONG).show();
-    }
-
-    public Bitmap resizeMapIcons(String iconName){
-        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
-        return Bitmap.createScaledBitmap(imageBitmap, 150, 150, false);
-    }
-    private String getZipCode(Double latitude, Double longitude) {
-        String zipCode = "";
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        try {
-            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            zipCode = addresses.get(0).getPostalCode();
-        }
-        catch (Exception e){
-        }
-        return zipCode;
-    }
-    private void loadPostalRestrooms(){
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        Double lat = mLastKnownLocation.getLatitude();
-        Double lng = mLastKnownLocation.getLongitude();
-
-        zipCode = getZipCode(lat, lng);
-        clearRestroomsOnMap();
-
-        if( mDatabase != null ) {
-            getRestroomInfoFromDB();
-        }
-        else{
-            toastThisShort("Error Loading Restrooms...Try Again Later");
-        }
-    }
-    private void getRestroomInfoFromDB(){
-        mDatabase.child(zipCode).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
-                int c = 0;
-                for( DataSnapshot dsChild : dsChildData){
-                    try {
-                        String key = String.valueOf(dsChild.getKey().replace("_", "."));
-                        String value = String.valueOf(dsChild.getValue(String.class));
-                        String markerInfo = key + ":" + value;
-                        if (passesFilters(markerInfo)) {
-                            addMarker(markerInfo);
-                            c++;
+                            if (nearest > current && reportGender.equals(targetGender)) {
+                                nearest = current;
+                                reportCount = String.valueOf(Integer.valueOf(listOfTargetFeatures[9]) + 1);
+                                oldKey = String.valueOf(dsChild.getKey());
+                                exists = true;
+                                nearRestrooms++;
+                            }
+                        }
+                        catch(DatabaseException e)
+                        {
+                            Log.d("Database Exception", e.getMessage());
+                            toastThisShort("Error Handling DB, try again later.");
                         }
                     }
-                    catch (DatabaseException e)
-                    {
-                        Log.d("Database Exception", e.getMessage());
-                        toastThisShort("Error Handling DB, try again later.");
+
+                    if (exists) {
+                        dialogConfirmCancelNewRestroom(oldKey, reportCoordinates + ":" + reportGender, featureString, oldFeatureString, Integer.valueOf(reportGender), nearRestrooms, reportCount);
+                    } else {
+                        handleAbsentRestroom(features);
                     }
+                    newReport = false;
                 }
-                toastThisShort("Found " + Integer.toString(c) + " Restroom(s) for ZipCode: " + zipCode);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        });
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
     }
+    private void handleAbsentRestroom(String features){
+        String[] listOfFeatures = features.split(":");
+        String reportCoordinates = listOfFeatures[0];
+        String reportGender = listOfFeatures[1];
+        int coordinates = reportCoordinates.length();
+        String featureString = features.substring(coordinates + 3);
+        String key = reportCoordinates + ":" + reportGender;
+        key = key.replace(".","_");
+        String value = featureString +":1";
+        mDatabase.child(zipCode).child(key).setValue(value);
+    }
+
+    // Starting/Handling New Dialogs
+    private void dialogConfirmCancelNewRestroom(final String oldKey, final String newKey, final String features, final String oldFeatureString, int gender, int restroomCount, final String reportCount){
+        AlertDialog.Builder builder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(thisContext, R.style.AlertDialogStyle);
+        } else {
+            builder = new AlertDialog.Builder(thisContext);
+        }
+
+        String message = "We found " + String.valueOf(restroomCount) + " restroom(s) of the same gender, " + possibleGender.get(gender) + ", within " + String.valueOf(MAX_DISTANCE) + " meters of your location\n";
+
+        builder.setTitle("Is this an EXISTING or NEW restroom?")
+                .setMessage(message)
+                .setPositiveButton(R.string.new_one, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        handleAbsentRestroom(newKey + ":" + features);
+                        toastThisShort("Sending Report for New Restroom");
+                    }
+                })
+                .setNegativeButton(R.string.exist_one, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String newOldFeatures = handleExistingFeatures(oldFeatureString, features);
+                        mDatabase.child(zipCode).child(oldKey).setValue(newOldFeatures + ":" + reportCount);
+                        toastThisShort("Sending Report for Existing Restroom");
+                    }
+                })
+                .setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
+    }
+    private void dialogError(String title, String message){
+        AlertDialog.Builder builder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(thisContext, R.style.AlertDialogStyle);
+        } else {
+            builder = new AlertDialog.Builder(thisContext);
+        }
+        builder.setTitle(title)
+                .setMessage(message)
+                .setNeutralButton(R.string.minimize, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {}
+                })
+                .show();
+    }
+    private void dialogConfirmCancelNewComplaint(final String key, final int reportCount, final String[] values){
+        AlertDialog.Builder builder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(thisContext, R.style.AlertDialogStyle);
+        } else {
+            builder = new AlertDialog.Builder(thisContext);
+        }
+
+        String message = "Are you sure you cannot find this restroom within " + String.valueOf(MAX_DISTANCE) + " meters of your location?";
+
+        builder.setTitle("Submitting a New Complaint")
+                .setMessage(message)
+                .setPositiveButton(R.string.cannot_find, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        handleConfirmNewComplain(key, reportCount, values);
+                    }
+                })
+                .setNegativeButton(R.string.look_more, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        toastThisShort("Cancelling Complaint for Restroom");
+                    }
+                })
+                .show();
+
+    }
+    private void handleConfirmNewComplain(final String key, final int reportCount, final String[] values){
+        selectedMarker = null;
+        newComplaint = false;
+        //handleAbsentRestroom(newKey + ":" + features);
+        if( reportCount < 1 ){
+            mDatabase.child(zipCode).child(key).removeValue();
+        }
+        else{
+            values[values.length - 1 ] = String.valueOf(reportCount);
+            String value = joinListByDelimiter(values, ":");
+            Log.d("New Val", value);
+            mDatabase.child(zipCode).child(key).setValue(value);
+        }
+        getDeviceLocation(true);
+        toastThisShort("Sending Complaint for Restroom");
+    }
+
+    // Filter Methods
     private boolean passesFilters( String markerInfo ){
         boolean pass = true;
 
@@ -497,6 +708,23 @@ public class MainActivity extends AppCompatActivity
 
         return pass;
     }
+    private boolean hasAmenities( String desiredAmenities, String amenities ){
+        boolean pass = true;
+
+        if( !desiredAmenities.equals("0")){
+            String[] desParts = desiredAmenities.split(",");
+            String[] tarParts = amenities.split(",");
+
+            for( int i = 0; i < desParts.length; ++i ){
+                if( !Arrays.asList(tarParts).contains(desParts[i])){
+                    pass = false;
+                    break;
+                }
+            }
+        }
+
+        return pass;
+    }
     private boolean openNow( String time ){
         boolean pass = true;
         if( !time.equals("0")) {
@@ -519,24 +747,34 @@ public class MainActivity extends AppCompatActivity
 
         return pass;
     }
-    private boolean hasAmenities( String desiredAmenities, String amenities ){
-        boolean pass = true;
 
-        if( !desiredAmenities.equals("0")){
-            String[] desParts = desiredAmenities.split(",");
-            String[] tarParts = amenities.split(",");
+    // Timer Methods
+    private void setTimeIntervalForMapRefresh(int delay, int period){
+        mapRefresh.scheduleAtFixedRate(new TimerTask() {
+                                           @Override
+                                           public void run() {
+                                               if (inactive) {
+                                                   getDeviceLocation(true);
+                                               }
+                                           }
 
-            for( int i = 0; i < desParts.length; ++i ){
-                if( !Arrays.asList(tarParts).contains(desParts[i])){
-                    pass = false;
-                    break;
-                }
-            }
-        }
+                                       },
+                delay,
+                period);
+    }
+    private void setTimeIntervalForUserInactivity(int delay, int period){
+        userInactivity.scheduleAtFixedRate(new TimerTask() {
+                                               @Override
+                                               public void run() {
+                                                   inactive = true;
+                                               }
 
-        return pass;
+                                           },
+                delay,
+                period);
     }
 
+    // Misc Helper Methods
     private String getCurrentTime(){
         String time;
         String period = "am";
@@ -555,274 +793,72 @@ public class MainActivity extends AppCompatActivity
         time = h + ":" + m + " " + period;
         return time;
     }
-    private void clearRestroomsOnMap(){
-        mMap.clear();
-    }
-
-    // The Original Code From The Template
-    private void getDeviceLocation(final boolean loadRestrooms) {
-        try {
-            if (mLocationPermissionGranted) {
-                Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
-                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Location> task) {
-                        if (task.isSuccessful()) {
-                            // Set the map's camera position to the current location of the device.
-                            mLastKnownLocation = task.getResult();
-                            if( mLastKnownLocation != null ){
-                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                        new LatLng(mLastKnownLocation.getLatitude(),
-                                                mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                                // DOES ALL THE HEAVY LIFTING HERE
-                                if( loadRestrooms ) {
-                                    loadPostalRestrooms();
-                                }
-                            }
-                            else{
-                                toastThisShort("Error loading last known location");
-                            }
-                        }
-                        else {
-                            toastThisShort( "Current location is null. Using defaults.");
-                            mMap.moveCamera(CameraUpdateFactory
-                                    .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
-                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                        }
-                    }
-                });
-            }
-        } catch (SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
-        }
-    }
-    private void getLocationPermission() {
-            if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                mLocationPermissionGranted = true;
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-            }
-    }
-    private void updateLocationUI() {
-        if (mMap == null) {
-            return;
-        }
-        try {
-            if (mLocationPermissionGranted) {
-                mMap.setMyLocationEnabled(true);
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            } else {
-                mMap.setMyLocationEnabled(false);
-                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                mLastKnownLocation = null;
-                getLocationPermission();
-            }
-        } catch (SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
-        }
-    }
-    private void handleRestroomReport(final String features ){
-        String[] listOfReportFeatures = features.split(":");
-        final String reportCoordinates = listOfReportFeatures[0];
-        final String reportGender = listOfReportFeatures[1];
-        DatabaseReference dbRef = mDatabase.child(zipCode);
-        int coordinates = reportCoordinates.length() + 3;
-        final String featureString = features.substring(coordinates);
-        String[] centerLatLng = reportCoordinates.split(",");
-        final double centerLat = Double.valueOf(centerLatLng[0]);
-        final double centerLng = Double.valueOf(centerLatLng[1]);
-
-        if( newReport ) {
-            dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
-                    boolean exists = false;
-                    String oldKey = "";
-                    String reportCount = "1";
-                    int nearRestrooms = 0;
-                    float nearest = MAX_DISTANCE;
-                    float current;
-
-                    for (DataSnapshot dsChild : dsChildData) {
-                        try {
-                            String markerInfo = (String.valueOf(dsChild.getKey() + ":" + dsChild.getValue(String.class))).replace("_", ".");
-                            String[] listOfTargetFeatures = markerInfo.split(":");
-                            String targetCoordinates = listOfTargetFeatures[0];
-                            String[] targetLatLng = targetCoordinates.split(",");
-                            String targetGender = listOfTargetFeatures[1];
-                            double targetLat = Double.valueOf(targetLatLng[0]);
-                            double targetLng = Double.valueOf(targetLatLng[1]);
-                            current = distanceBetween2LatLngs(centerLat, centerLng, targetLat, targetLng);
-
-                            if (nearest > current && reportGender.equals(targetGender)) {
-                                nearest = current;
-                                reportCount = String.valueOf(Integer.valueOf(listOfTargetFeatures[9]) + 1);
-                                oldKey = String.valueOf(dsChild.getKey());
-                                exists = true;
-                                nearRestrooms++;
-                            }
-                            if (exists) {
-                                dialogConfirmCancelNewRestroom(oldKey, reportCoordinates + ":" + reportGender, featureString, Integer.valueOf(reportGender), nearRestrooms, reportCount);
-                            } else {
-                                handleAbsentRestroom(features);
-                            }
-                            newReport = false;
-                        }
-                    catch(DatabaseException e)
-                        {
-                            Log.d("Database Exception", e.getMessage());
-                            toastThisShort("Error Handling DB, try again later.");
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            });
-        }
-    }
-    private void dialogConfirmCancelNewComplaint(final String key, final int reportCount, final String[] values){
-        AlertDialog.Builder builder;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder = new AlertDialog.Builder(thisContext, R.style.AlertDialogStyle);
-        } else {
-            builder = new AlertDialog.Builder(thisContext);
-        }
-
-        String message = "Are you sure you cannot find this restroom within " + String.valueOf(MAX_DISTANCE) + " meters of your location?";
-
-        builder.setTitle("Submitting a New Complaint")
-                .setMessage(message)
-                .setPositiveButton(R.string.cannot_find, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        selectedMarker = null;
-                        newComplaint = false;
-                        //handleAbsentRestroom(newKey + ":" + features);
-                        if( reportCount < 1 ){
-                            mDatabase.child(zipCode).child(key).removeValue();
-                        }
-                        else{
-                            values[values.length - 1 ] = String.valueOf(reportCount);
-                            String value = joinListByDelimiter(values, ":");
-                            Log.d("New Val", value);
-                            mDatabase.child(zipCode).child(key).setValue(value);
-                        }
-                        getDeviceLocation(true);
-                        toastThisShort("Sending Complaint for Restroom");
-                    }
-                })
-                .setNegativeButton(R.string.look_more, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        toastThisShort("Cancelling Complaint for Restroom");
-                    }
-                })
-                .show();
-
-    }
-    private void dialogConfirmCancelNewRestroom(final String oldKey, final String newKey, final String features, int gender, int restroomCount, final String reportCount){
-        AlertDialog.Builder builder;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder = new AlertDialog.Builder(thisContext, R.style.AlertDialogStyle);
-        } else {
-            builder = new AlertDialog.Builder(thisContext);
-        }
-
-        String message = "We found " + String.valueOf(restroomCount) + " restroom(s) of the same gender, " + possibleGender.get(gender) + ", within " + String.valueOf(MAX_DISTANCE) + " meters of your location\n";
-
-        builder.setTitle("Is this an EXISTING or NEW restroom?")
-                .setMessage(message)
-                .setPositiveButton(R.string.new_one, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        handleAbsentRestroom(newKey + ":" + features);
-                        toastThisShort("Sending Report for New Restroom");
-                    }
-                })
-                .setNegativeButton(R.string.exist_one, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        mDatabase.child(zipCode).child(oldKey).setValue(features + ":" + reportCount);
-                        toastThisShort("Sending Report for Existing Restroom");
-                    }
-                })
-                .setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .show();
-    }
-    private void dialogError(String title, String message){
-        AlertDialog.Builder builder;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder = new AlertDialog.Builder(thisContext, R.style.AlertDialogStyle);
-        } else {
-            builder = new AlertDialog.Builder(thisContext);
-        }
-        builder.setTitle(title)
-                .setMessage(message)
-                .setNeutralButton(R.string.minimize, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {}
-                })
-                .show();
-    }
-    private void handleAbsentRestroom(String features){
-        String[] listOfFeatures = features.split(":");
-        String reportCoordinates = listOfFeatures[0];
-        String reportGender = listOfFeatures[1];
-        int coordinates = reportCoordinates.length();
-        String featureString = features.substring(coordinates + 3);
-        String key = reportCoordinates + ":" + reportGender;
-        key = key.replace(".","_");
-        String value = featureString +":1";
-        Log.d("New Rest", features );
-        Log.d("New Key", key );
-        Log.d("New Val", value);
-        mDatabase.child(zipCode).child(key).setValue(value);
-    }
     private float distanceBetween2LatLngs(double centerLat, double centerLng, double pointLat, double pointLng){
         float[] results = new float[1];
         Location.distanceBetween(centerLat, centerLng, pointLat, pointLng, results);
         float distanceInMeters = results[0];
         return distanceInMeters;
     }
-    private void setTimeIntervalForMapRefresh(int delay, int period){
-        mapRefresh.scheduleAtFixedRate(new TimerTask() {
-                                               @Override
-                                               public void run() {
-                                                   if (inactive) {
-                                                       getDeviceLocation(true);
-                                                   }
-                                               }
-
-                                           },
-                delay,
-                period);
+    private String getZipCode(Double latitude, Double longitude) {
+        String zipCode = "";
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            zipCode = addresses.get(0).getPostalCode();
+        }
+        catch (Exception e){
+        }
+        return zipCode;
     }
-    private void setTimeIntervalForUserInactivity(int delay, int period){
-        userInactivity.scheduleAtFixedRate(new TimerTask() {
-                                               @Override
-                                               public void run() {
-                                                   inactive = true;
-                                               }
+    private void toastThisShort(String message){
+        Toast.makeText(thisContext,
+                message,
+                Toast.LENGTH_SHORT).show();
+    }
+    private void toastThisLong(String message){
+        Toast.makeText(thisContext,
+                message,
+                Toast.LENGTH_LONG).show();
+    }
+    private String joinListByDelimiter( String[] list, String delim){
+        StringBuilder s = new StringBuilder("");
 
-                                           },
-                delay,
-                period);
+        for( int i = 0; i < list.length - 1; ++i ){
+            s.append(list[i]);
+            s.append(delim);
+        }
+        s.append(list[list.length - 1]);
+
+        return s.toString();
+    }
+    private String handleExistingFeatures(String oldFeaturesString, String newFeaturesString){
+        String[] newFeaturesList = newFeaturesString.split(":");
+        String[] oldFeaturesList = oldFeaturesString.split(":");
+        int len = newFeaturesList.length;
+        StringBuilder newFeatures = new StringBuilder("");
+        for( int i = 0; i < len-1; ++i ){
+            if( newFeaturesList[i].equals("0")){
+                newFeatures.append(oldFeaturesList[i]);
+            }
+            else{
+                newFeatures.append(newFeaturesList[i]);
+            }
+            newFeatures.append(":");
+        }
+
+        if( newFeaturesList[len-1].equals("0")){
+            newFeatures.append(oldFeaturesList[len-1]);
+        }
+        else{
+            newFeatures.append(newFeaturesList[len-1]);
+        }
+
+        return newFeatures.toString();
     }
 
-
-    // The Original Code From The Template
+    // Override Methods
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         mLocationPermissionGranted = false;
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
@@ -867,6 +903,7 @@ public class MainActivity extends AppCompatActivity
                 case FILTERS_ACTIVITY:
                     filters = data.getStringExtra("filters");
                     break;
+                case LOCATION_ACTIVITY:
                 case REPORT_ACTIVITY:
                     String features = data.getStringExtra("features");
                     newReport = true;
@@ -883,7 +920,6 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         getDeviceLocation(true);
     }
-
     @Override
     public void onUserInteraction(){
         inactive = false;

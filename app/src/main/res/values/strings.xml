@@ -100,12 +100,15 @@
 
     </string>
 
+    <string name="dragText">Press and Hold the pin to drag it to the location</string>
     <string name="changelogHeader">
 
         \n> Changelog:
     </string>
     <string name="changelog">
         -> V 1.06 (Current):
+        \n—> Added new activity that allows the user to drag and drop the restroom location for increased accuracy.
+        \n—> If the new report has an \"N\A\", it will use the previous report\'s feature instead.
 
         \n\n-> V 1.05:
         \n—> Release to Production.

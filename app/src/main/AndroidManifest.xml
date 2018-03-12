@@ -43,6 +43,10 @@
             android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
             android:screenOrientation="portrait">
         </activity>
+        <activity
+            android:name=".LocationActivity"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>
