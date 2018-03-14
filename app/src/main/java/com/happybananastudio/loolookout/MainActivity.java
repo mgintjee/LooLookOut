@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity
         zipCode = getZipCode(lat, lng);
         clearRestroomsOnMap();
 
-        if( mDatabase != null ) {
+        if( mDatabase != null && !zipCode.equals("")) {
             getRestroomInfoFromDB();
         }
         else{
@@ -399,7 +399,8 @@ public class MainActivity extends AppCompatActivity
     // Starting/Handling New Activity Methods
     private void startReportActivity(){
         getDeviceLocation(false);
-        if( mLastKnownLocation != null ) {
+        zipCode = getZipCode(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude());
+        if( mLastKnownLocation != null && !zipCode.equals("")) {
             toastThisShort("Submitting Restroom");
             Intent intent = new Intent(thisContext, LocationActivity.class);
             intent.putExtra("lat", mLastKnownLocation.getLatitude());

@@ -96,6 +96,7 @@
         \n-> Update ALL graphics for consistency
         \n-> Auto-refreshing the map when the user submits a report so that it will show the new restroom
         \n—> (App refreshes the map after every minute.) So it kinda does this
+        \n-> If the restroom location is in some distance away from another zipcode, add it to that zipcode group.
 
     </string>
 
@@ -110,6 +111,7 @@
         \n—> Changed text for filters button to try and make it more clear for the functionality of the buttons.
         \n—> Changed colors from orange to blue.
         \n—> Updated some graphics.
+        \n—> Fixed an issue where the app will try to query the DB w/o actually knowing the zipcode.
 
         \n\n-> V 1.06:
         \n—> Added new activity that allows the user to drag and drop the restroom location for increased accuracy.

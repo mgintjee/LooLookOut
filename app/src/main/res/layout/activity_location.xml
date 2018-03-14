@@ -41,7 +41,7 @@
             android:adjustViewBounds="true"
             android:background="@color/dull_blue"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/arrowBack" />
+            app:srcCompat="@drawable/arrow_back" />
 
         <TextView
             android:layout_width="match_parent"
@@ -62,7 +62,7 @@
             android:adjustViewBounds="true"
             android:background="@color/dull_blue"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/arrowNext" />
+            app:srcCompat="@drawable/arrow_next" />
 
     </LinearLayout>
 
