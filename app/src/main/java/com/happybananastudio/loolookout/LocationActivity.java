@@ -122,7 +122,7 @@ public class LocationActivity extends AppCompatActivity
             public void onClick(View v) {
                 float dist = distanceBetween2LatLngs(initialLatLng.latitude, initialLatLng.longitude, newLatLng.latitude, newLatLng.longitude);
                 if( newLatLng != null && MAX_DISTANCE > dist ) {
-                    toastThisShort("Reporting Restroom");
+                    toastThisShort("Submitting Restroom");
                     Intent intent = new Intent(thisContext, ReportActivity.class);
                     intent.putExtra("lat", newLatLng.latitude);
                     intent.putExtra("lng", newLatLng.longitude);

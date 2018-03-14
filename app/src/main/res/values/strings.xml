@@ -22,7 +22,7 @@
 
     <string name="minimize">Minimize Window</string>
     <string name="clear">Reset Filters</string>
-    <string name="save">Save &amp; Apply Filters</string>
+    <string name="save">Close &amp; Apply</string>
 
     <string name="none">N/A</string>
 
@@ -57,8 +57,8 @@
     <string name="optional">Optional Features:</string>
 
     <string name="location">Your Location</string>
-    <string name="cancel">Cancel Report</string>
-    <string name="send">Send Report</string>
+    <string name="cancel">Cancel Submission</string>
+    <string name="send">Send Submission</string>
 
     <string name="edit">Edit Restroom</string>
     <string name="report">Report Restroom</string>
@@ -94,9 +94,8 @@
     <string name="plannedFeatures">
         -> Accounting for which floor the restroom is on
         \n-> Update ALL graphics for consistency
-        \n-> When updating restrooms, don\'t just replace the restroom values, determine which part of the values to update.
         \n-> Auto-refreshing the map when the user submits a report so that it will show the new restroom
-        \n—> (App refreshes the map after every minute.) Kinda does this
+        \n—> (App refreshes the map after every minute.) So it kinda does this
 
     </string>
 
@@ -106,7 +105,13 @@
         \n> Changelog:
     </string>
     <string name="changelog">
-        -> V 1.06 (Current):
+        -> V 1.07 (Current):
+        \n—> Moved toast message to be at the top of the screen to avoid cluttering the bottom.
+        \n—> Changed text for filters button to try and make it more clear for the functionality of the buttons.
+        \n—> Changed colors from orange to blue.
+        \n—> Updated some graphics.
+
+        \n\n-> V 1.06:
         \n—> Added new activity that allows the user to drag and drop the restroom location for increased accuracy.
         \n—> If the new report has an \"N\A\", it will use the previous report\'s feature instead.
 

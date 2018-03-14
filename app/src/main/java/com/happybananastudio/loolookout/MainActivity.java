@@ -17,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -399,7 +400,7 @@ public class MainActivity extends AppCompatActivity
     private void startReportActivity(){
         getDeviceLocation(false);
         if( mLastKnownLocation != null ) {
-            toastThisShort("Reporting Restroom");
+            toastThisShort("Submitting Restroom");
             Intent intent = new Intent(thisContext, LocationActivity.class);
             intent.putExtra("lat", mLastKnownLocation.getLatitude());
             intent.putExtra("lng", mLastKnownLocation.getLongitude());
@@ -811,9 +812,11 @@ public class MainActivity extends AppCompatActivity
         return zipCode;
     }
     private void toastThisShort(String message){
-        Toast.makeText(thisContext,
+        Toast toast = Toast.makeText(thisContext,
                 message,
-                Toast.LENGTH_SHORT).show();
+                Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.show();
     }
     private void toastThisLong(String message){
         Toast.makeText(thisContext,

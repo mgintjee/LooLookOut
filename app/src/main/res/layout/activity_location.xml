@@ -28,9 +28,10 @@
         android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:background="@color/black">
+        android:layout_alignParentStart="true"
+        android:background="@color/dull_blue"
+        android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/Location_iB_Cancel"
@@ -38,41 +39,20 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:adjustViewBounds="true"
-            android:background="@android:color/holo_orange_dark"
+            android:background="@color/dull_blue"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/report_toilet" />
-
-        <ImageButton
-            android:id="@+id/Location_Spacer0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:background="@android:color/holo_orange_dark"
-            android:scaleType="fitXY"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/report_toilet" />
+            app:srcCompat="@drawable/arrowBack" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@android:color/holo_orange_dark"
+            android:background="@color/dull_blue"
+            android:gravity="center"
             android:text="@string/dragText"
             android:textAlignment="center"
             android:textColor="@color/black"
-            android:gravity="center"/>
-
-        <ImageButton
-            android:id="@+id/Location_Spacer2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:background="@color/black"
-            android:scaleType="fitXY"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/report_toilet" />
+            android:textSize="14sp" />
 
         <ImageButton
             android:id="@+id/Location_iB_Continue"
@@ -80,9 +60,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:adjustViewBounds="true"
-            android:background="@android:color/holo_orange_dark"
+            android:background="@color/dull_blue"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/add_toilet" />
+            app:srcCompat="@drawable/arrowNext" />
 
     </LinearLayout>
 
