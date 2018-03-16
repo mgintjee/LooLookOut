@@ -549,7 +549,6 @@ public class MainActivity extends AppCompatActivity
         key = key.replace(".","_");
         String value = featureString +":1";
         handleNearbyZipCodesForSubmit(key, value);
-        mDatabase.child(zipCode).child(key).setValue(value);
     }
 
     private void handleNearbyZipCodesForSubmit(String key, String value){
@@ -572,6 +571,8 @@ public class MainActivity extends AppCompatActivity
         if( !zipCodeW.equals(zipCodeC) ){
             mDatabase.child(zipCodeW).child(key).setValue(value);
         }
+
+        mDatabase.child(zipCode).child(key).setValue(value);
     }
 
     private void handleNearbyZipCodesForComplaint(String key, int reportCount, String[] values){
@@ -620,7 +621,7 @@ public class MainActivity extends AppCompatActivity
                 .setNegativeButton(R.string.exist_one, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         String newOldFeatures = handleExistingFeatures(oldFeatureString, features);
-                        mDatabase.child(zipCode).child(oldKey).setValue(newOldFeatures + ":" + reportCount);
+                        handleNearbyZipCodesForSubmit(oldKey, newOldFeatures + ":" + reportCount);
                         toastThisShort("Sending Report for Existing Restroom");
                     }
                 })
