@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.icu.text.LocaleDisplayNames;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -107,6 +108,9 @@ public class MainActivity extends AppCompatActivity
     private final int REPORT_ACTIVITY = 2;
     private final int ABOUT_ACTIVITY = 3;
     private final int LOCATION_ACTIVITY = 4;
+    private double lat;
+    private double lng;
+    private double margin = 0.003;
 
     private Timer userInactivity;
     private Timer mapRefresh;
@@ -147,8 +151,8 @@ public class MainActivity extends AppCompatActivity
     // Main App Methods
     private void loadPostalRestrooms(){
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        Double lat = mLastKnownLocation.getLatitude();
-        Double lng = mLastKnownLocation.getLongitude();
+        lat = mLastKnownLocation.getLatitude();
+        lng = mLastKnownLocation.getLongitude();
 
         zipCode = getZipCode(lat, lng);
         clearRestroomsOnMap();
@@ -544,7 +548,53 @@ public class MainActivity extends AppCompatActivity
         String key = reportCoordinates + ":" + reportGender;
         key = key.replace(".","_");
         String value = featureString +":1";
+        handleNearbyZipCodesForSubmit(key, value);
         mDatabase.child(zipCode).child(key).setValue(value);
+    }
+
+    private void handleNearbyZipCodesForSubmit(String key, String value){
+
+        String zipCodeC = zipCode;
+        String zipCodeN = getZipCode(lat + margin, lng);
+        String zipCodeE = getZipCode(lat, lng + margin);
+        String zipCodeS = getZipCode(lat - margin, lng);
+        String zipCodeW = getZipCode(lat, lng - margin);
+
+        if( !zipCodeN.equals(zipCodeC) ){
+            mDatabase.child(zipCodeN).child(key).setValue(value);
+        }
+        if( !zipCodeE.equals(zipCodeC) ){
+            mDatabase.child(zipCodeE).child(key).setValue(value);
+        }
+        if( !zipCodeS.equals(zipCodeC) ){
+            mDatabase.child(zipCodeS).child(key).setValue(value);
+        }
+        if( !zipCodeW.equals(zipCodeC) ){
+            mDatabase.child(zipCodeW).child(key).setValue(value);
+        }
+    }
+
+    private void handleNearbyZipCodesForComplaint(String key, int reportCount, String[] values){
+        String zipCodeC = zipCode;
+        String zipCodeN = getZipCode(lat + margin, lng);
+        String zipCodeE = getZipCode(lat, lng + margin);
+        String zipCodeS = getZipCode(lat - margin, lng);
+        String zipCodeW = getZipCode(lat, lng - margin);
+
+        if( !zipCodeN.equals(zipCodeC) ){
+            handleConfirmNewComplain(zipCodeN, key, reportCount, values);
+        }
+        if( !zipCodeE.equals(zipCodeC) ){
+            handleConfirmNewComplain(zipCodeE, key, reportCount, values);
+        }
+        if( !zipCodeS.equals(zipCodeC) ){
+            handleConfirmNewComplain(zipCodeS, key, reportCount, values);
+        }
+        if( !zipCodeW.equals(zipCodeC) ){
+            handleConfirmNewComplain(zipCodeW, key, reportCount, values);
+        }
+
+        handleConfirmNewComplain(zipCodeC, key, reportCount, values);
     }
 
     // Starting/Handling New Dialogs
@@ -610,7 +660,7 @@ public class MainActivity extends AppCompatActivity
                 .setMessage(message)
                 .setPositiveButton(R.string.cannot_find, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        handleConfirmNewComplain(key, reportCount, values);
+                        handleNearbyZipCodesForComplaint(key, reportCount, values);
                     }
                 })
                 .setNegativeButton(R.string.look_more, new DialogInterface.OnClickListener() {
@@ -621,21 +671,30 @@ public class MainActivity extends AppCompatActivity
                 .show();
 
     }
-    private void handleConfirmNewComplain(final String key, final int reportCount, final String[] values){
+    private void handleConfirmNewComplain(final String zipCode, final String key, final int reportCount, final String[] values){
         selectedMarker = null;
         newComplaint = false;
         //handleAbsentRestroom(newKey + ":" + features);
-        if( reportCount < 1 ){
-            mDatabase.child(zipCode).child(key).removeValue();
-        }
-        else{
-            values[values.length - 1 ] = String.valueOf(reportCount);
-            String value = joinListByDelimiter(values, ":");
-            Log.d("New Val", value);
-            mDatabase.child(zipCode).child(key).setValue(value);
-        }
-        getDeviceLocation(true);
-        toastThisShort("Sending Complaint for Restroom");
+        mDatabase.child(zipCode).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if( dataSnapshot.hasChild(key)){
+                    if( reportCount < 1 ){
+                        mDatabase.child(zipCode).child(key).removeValue();
+                    }
+                    else{
+                        values[values.length - 1 ] = String.valueOf(reportCount);
+                        String value = joinListByDelimiter(values, ":");
+                        mDatabase.child(zipCode).child(key).setValue(value);
+                    }
+                    getDeviceLocation(true);
+                    toastThisShort("Sending Complaint for Restroom");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
     }
 
     // Filter Methods

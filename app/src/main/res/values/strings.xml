@@ -106,7 +106,13 @@
         \n> Changelog:
     </string>
     <string name="changelog">
-        -> V 1.07 (Current):
+        -> V 1.08 (Current):
+        \n—> When submitting a restroom, it will check nearby locations to see if it falls into another zipcode.
+        \n——> If it does then it adds the restroom to that zipcode\'s table.
+        \n——> This allows for redundant data, but the margin is small enough that it really only covers boundary restrooms.
+        \n—> Does the same for filing complaints.
+
+        \n\n-> V 1.07:
         \n—> Moved toast message to be at the top of the screen to avoid cluttering the bottom.
         \n—> Changed text for filters button to try and make it more clear for the functionality of the buttons.
         \n—> Changed colors from orange to blue.
