@@ -106,7 +106,11 @@
         \n> Changelog:
     </string>
     <string name="changelog">
-        -> V 1.08 (Current):
+        -> V 1.09 (Current):
+        \n—> Has default static filter of 1000 meters for the restrooms.
+        \n——> Planning on letting users modify this filter value.
+
+        \n\n-> V 1.08:
         \n—> When submitting a restroom, it will check nearby locations to see if it falls into another zipcode.
         \n——> If it does then it adds the restroom to that zipcode\'s table.
         \n——> This allows for redundant data, but the margin is small enough that it really only covers boundary restrooms.

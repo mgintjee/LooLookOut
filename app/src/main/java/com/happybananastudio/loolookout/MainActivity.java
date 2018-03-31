@@ -6,13 +6,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.icu.text.LocaleDisplayNames;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -83,6 +81,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private int MAX_DISTANCE = 25;
+    private int FILTER_DISTANCE = 1000;
     private Context thisContext = this;
     private String zipCode;
     private DatabaseReference mDatabase;
@@ -175,7 +174,7 @@ public class MainActivity extends AppCompatActivity
                         String key = String.valueOf(dsChild.getKey().replace("_", "."));
                         String value = String.valueOf(dsChild.getValue(String.class));
                         String markerInfo = key + ":" + value;
-                        if (passesFilters(markerInfo)) {
+                        if (withinFilterDistance(markerInfo.split(":")[0]) &&passesFilters(markerInfo)) {
                             addMarker(markerInfo);
                             c++;
                         }
@@ -186,7 +185,7 @@ public class MainActivity extends AppCompatActivity
                         toastThisShort("Error Handling DB, try again later.");
                     }
                 }
-                toastThisShort("Found " + Integer.toString(c) + " Restroom(s) for ZipCode: " + zipCode);
+                toastThisShort("Found " + Integer.toString(c) + " Restroom(s) for ZipCode: " + zipCode + " within " + String.valueOf(FILTER_DISTANCE) + " meters.");
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -203,7 +202,7 @@ public class MainActivity extends AppCompatActivity
                 Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
                 locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
                     @Override
-                    public void onComplete(@NonNull Task<Location> task) {
+                    public void onComplete( Task<Location> task) {
                         if (task.isSuccessful()) {
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = task.getResult();
@@ -550,7 +549,6 @@ public class MainActivity extends AppCompatActivity
         String value = featureString +":1";
         handleNearbyZipCodesForSubmit(key, value);
     }
-
     private void handleNearbyZipCodesForSubmit(String key, String value){
 
         String zipCodeC = zipCode;
@@ -574,7 +572,6 @@ public class MainActivity extends AppCompatActivity
 
         mDatabase.child(zipCode).child(key).setValue(value);
     }
-
     private void handleNearbyZipCodesForComplaint(String key, int reportCount, String[] values){
         String zipCodeC = zipCode;
         String zipCodeN = getZipCode(lat + margin, lng);
@@ -706,10 +703,21 @@ public class MainActivity extends AppCompatActivity
             String[] filterParts = filters.split(":");
             String[] markerParts = markerInfo.split(":");
 
-            pass = sameGender( filterParts[0], markerParts[1]) && sameSize( filterParts[1], markerParts[2]) && atLeastClean( filterParts[2], markerParts[3]) && sameTraffic( filterParts[3], markerParts[4]) && sameAccess(filterParts[4], markerParts[5]) && openNow( markerParts[6]) && hasAmenities(filterParts[5], markerParts[7]);
+            pass =  sameGender( filterParts[0], markerParts[1]) && sameSize( filterParts[1], markerParts[2]) && atLeastClean( filterParts[2], markerParts[3]) && sameTraffic( filterParts[3], markerParts[4]) && sameAccess(filterParts[4], markerParts[5]) && openNow( markerParts[6]) && hasAmenities(filterParts[5], markerParts[7]);
         }
 
         return pass;
+    }
+    private boolean withinFilterDistance( String stringLatLng ){
+        String[] latLng = stringLatLng.split(",");
+        double centerLat = mLastKnownLocation.getLatitude();
+        double centerLng = mLastKnownLocation.getLongitude();
+        double lat = Double.valueOf(latLng[0]);
+        double lng = Double.valueOf(latLng[1]);
+
+        float distance = distanceBetween2LatLngs(centerLat, centerLng, lat, lng);
+
+        return distance < FILTER_DISTANCE;
     }
     private boolean sameGender(String filter, String target){
         boolean pass = true;
@@ -922,7 +930,7 @@ public class MainActivity extends AppCompatActivity
 
     // Override Methods
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         mLocationPermissionGranted = false;
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
