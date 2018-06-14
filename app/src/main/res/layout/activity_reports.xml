@@ -2,22 +2,34 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/BlueSea">
 
     <LinearLayout
-        android:id="@+id/lL_Info"
+        android:id="@+id/LL_Info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_above="@id/lL_Footer"
+        android:layout_above="@id/FS_LL_Footer"
         android:layout_alignParentTop="true">
+
+        <TextView
+            android:id="@+id/RP_TV_Header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/RestroomInformation"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
 
@@ -25,7 +37,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/required"
-                    android:textSize="24sp"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <LinearLayout
@@ -43,15 +56,17 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/location"
-                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/Report_tV_Location"
+                            android:id="@+id/RP_TV_Location"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/defaultText"
-                            android:textSize="18sp" />
+                            android:textColor="@color/black"
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -64,52 +79,69 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/gender"
+                            android:textColor="@color/black"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                        <RadioGroup
-                            android:id="@+id/Report_rG_Gender"
+                        <com.happybananastudio.loolookout.RadioGroupTableLayout
+                            android:id="@+id/RP_RGTL_Gender"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:checkedButton="@+id/Report_rB_Inclusive"
+                            android:checkedButton="@+id/FS_RB_SizeNAa"
                             android:orientation="vertical">
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_Inclusive"
+                            <TableRow
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/inclusive"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                android:layout_height="match_parent">
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_Male"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/male"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                <RadioButton
+                                    android:id="@+id/RP_RB_Inclusive"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/inclusive"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_Female"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/female"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                <RadioButton
+                                    android:id="@+id/RP_RB_Male"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/male"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_Family"
+                            </TableRow>
+
+                            <TableRow
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/family"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
-                        </RadioGroup>
+                                android:layout_height="match_parent">
+
+                                <RadioButton
+                                    android:id="@+id/RP_RB_Female"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/female"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+
+                                <RadioButton
+                                    android:id="@+id/RP_RB_Family"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/none"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+
+                            </TableRow>
+                        </com.happybananastudio.loolookout.RadioGroupTableLayout>
 
                     </LinearLayout>
 
@@ -119,7 +151,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/optional"
-                    android:textSize="24sp"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <LinearLayout
@@ -136,61 +169,90 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/size"
+                            android:textColor="@color/black"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                        <RadioGroup
-                            android:id="@+id/Report_rG_Size"
+                        <com.happybananastudio.loolookout.RadioGroupTableLayout
+                            android:id="@+id/RP_RGTL_Size"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:checkedButton="@+id/Report_rB_NA_size"
+                            android:layout_height="match_parent"
+                            android:checkedButton="@+id/FS_RB_SizeNAa"
                             android:orientation="vertical">
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_NA_size"
+                            <TableRow
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/none"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                android:layout_height="match_parent">
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_Single"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/single"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                <RadioButton
+                                    android:id="@+id/RP_RB_SizeNA"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/none"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_Small"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/small"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                <RadioButton
+                                    android:id="@+id/RP_RB_Single"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/single"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_Medium"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/medium"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                <RadioButton
+                                    android:id="@+id/RP_RB_Small"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/small"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_Large"
+                            </TableRow>
+
+                            <TableRow
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/large"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
-                        </RadioGroup>
+                                android:layout_height="match_parent">
+
+                                <RadioButton
+                                    android:id="@+id/RP_RB_Medium"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/medium"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+
+                                <RadioButton
+                                    android:id="@+id/RP_RB_Large"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/large"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+
+                                <RadioButton
+                                    android:id="@+id/RP_Spacer_Size_0"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/none"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp"
+                                    android:visibility="invisible" />
+
+                            </TableRow>
+                        </com.happybananastudio.loolookout.RadioGroupTableLayout>
 
                     </LinearLayout>
 
@@ -199,22 +261,31 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical">
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/clean"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/Report_tV_Clean"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/none"
-                            android:textSize="14sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:text="@string/clean"
+                                android:textColor="@color/black"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/RP_TV_Clean"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:text="@string/none"
+                                android:textColor="@color/black"
+                                android:textSize="18sp" />
+
+                        </LinearLayout>
 
                         <SeekBar
-                            android:id="@+id/Report_sB_Clean"
+                            android:id="@+id/RP_SB_Clean"
                             style="@style/Widget.AppCompat.SeekBar.Discrete"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -232,53 +303,69 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/traffic"
+                            android:textColor="@color/black"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                        <RadioGroup
-                            android:id="@+id/Report_rG_Traffic"
+                        <com.happybananastudio.loolookout.RadioGroupTableLayout
+                            android:id="@+id/RP_RGTL_Traffic"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:checkedButton="@+id/Report_rB_NA_traffic"
+                            android:layout_height="match_parent"
+                            android:checkedButton="@+id/FS_RB_SizeNAa"
                             android:orientation="vertical">
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_NA_traffic"
+                            <TableRow
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/none"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                android:layout_height="match_parent">
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_Low"
+                                <RadioButton
+                                    android:id="@+id/RP_RB_TrafficNA"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/none"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+
+                                <RadioButton
+                                    android:id="@+id/RP_RB_Low"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/low"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+
+                            </TableRow>
+
+                            <TableRow
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/low"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                android:layout_height="match_parent">
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_Some"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/some"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                <RadioButton
+                                    android:id="@+id/RP_RB_Some"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/some"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_High"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/high"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                <RadioButton
+                                    android:id="@+id/RP_RB_High"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/high"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
 
-                        </RadioGroup>
+                            </TableRow>
+                        </com.happybananastudio.loolookout.RadioGroupTableLayout>
 
                     </LinearLayout>
 
@@ -291,53 +378,69 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/access"
+                            android:textColor="@color/black"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                        <RadioGroup
-                            android:id="@+id/Report_rG_Access"
+                        <com.happybananastudio.loolookout.RadioGroupTableLayout
+                            android:id="@+id/RP_RGTL_Access"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:checkedButton="@+id/Report_rB_NA_access"
+                            android:layout_height="match_parent"
+                            android:checkedButton="@+id/FS_RB_SizeNAa"
                             android:orientation="vertical">
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_NA_access"
+                            <TableRow
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/none"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                android:layout_height="match_parent">
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_Public"
+                                <RadioButton
+                                    android:id="@+id/RP_RB_AccessNA"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/none"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+
+                                <RadioButton
+                                    android:id="@+id/RP_RB_Public"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/publicUse"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+
+                            </TableRow>
+
+                            <TableRow
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/publicUse"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                android:layout_height="match_parent">
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_Customer_Only"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/customerUse"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                <RadioButton
+                                    android:id="@+id/RP_RB_Customer"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/customerUse"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
 
-                            <RadioButton
-                                android:id="@+id/Report_rB_Private"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:text="@string/privateUse"
-                                android:textAlignment="textStart"
-                                android:textSize="14sp" />
+                                <RadioButton
+                                    android:id="@+id/RP_RB_Private"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:text="@string/privateUse"
+                                    android:textAlignment="textStart"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
 
-                        </RadioGroup>
+                            </TableRow>
+                        </com.happybananastudio.loolookout.RadioGroupTableLayout>
 
                     </LinearLayout>
 
@@ -346,22 +449,31 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical">
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/time"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/Report_tV_Time"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/none"
-                            android:textSize="14sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:text="@string/time"
+                                android:textColor="@color/black"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/RP_TV_Time"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:text="@string/none"
+                                android:textColor="@color/black"
+                                android:textSize="18sp" />
+
+                        </LinearLayout>
 
                         <SeekBar
-                            android:id="@+id/Report_sB_Time"
+                            android:id="@+id/RP_SB_Time"
                             style="@style/Widget.AppCompat.SeekBar.Discrete"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -379,6 +491,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/amenities"
+                            android:textColor="@color/black"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -388,25 +501,28 @@
                             android:orientation="vertical">
 
                             <CheckBox
-                                android:id="@+id/Report_cB_Diaper"
+                                android:id="@+id/RP_CB_Diaper"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="@string/diaper" />
+                                android:text="@string/diaper"
+                                android:textColor="@color/black" />
 
                             <CheckBox
-                                android:id="@+id/Report_cB_Condom"
+                                android:id="@+id/RP_CB_Condom"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="@string/condom" />
+                                android:text="@string/condom"
+                                android:textColor="@color/black" />
 
                             <CheckBox
-                                android:id="@+id/Report_cB_Tampon"
+                                android:id="@+id/RP_CB_Tampon"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="@string/tampon" />
+                                android:text="@string/tampon"
+                                android:textColor="@color/black" />
                         </LinearLayout>
 
                     </LinearLayout>
@@ -419,38 +535,66 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/lL_Footer"
+        android:id="@+id/FS_LL_Footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:background="@color/GoldSky">
 
         <Button
-            android:id="@+id/Report_b_Cancel"
+            android:id="@+id/RP_Footer_Spacer_0"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/dull_blue"
-            android:text="@string/cancel" />
-
-        <Button
-            android:id="@+id/Report_FooterSpacer"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/cast_intro_overlay_button_background_color"
-            android:text="@string/send"
+            android:textAllCaps="false"
+            android:textSize="12sp"
             android:visibility="invisible" />
 
         <Button
-            android:id="@+id/Report_b_Send"
+            android:id="@+id/RP_B_Cancel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/OrangeSun"
+            android:text="@string/cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/RP_Footer_Spacer_1"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/dull_blue"
-            android:text="@string/send" />
+            android:background="@color/cast_intro_overlay_button_background_color"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/RP_B_Send"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/OrangeSun"
+            android:text="@string/send"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/RP_Footer_Spacer_2"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/cast_intro_overlay_button_background_color"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:visibility="invisible" />
     </LinearLayout>
 </RelativeLayout>

@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#9fd0f2</color>
+    <color name="colorPrimaryDark">#808080</color>
+    <color name="colorAccent">#ee6e08</color>
+
+    <color name="GoldSky">#f9e797</color>
+    <color name="OrangeSun">#ee6e08</color>
+    <color name="BlueSea">#9fd0f2</color>
+    <color name="GrayRock">#808080</color>
+
     <color name="yellow">#FFFF00</color>
     <color name="white">#ffffff</color>
     <color name="fuchsia">#FF00FF</color>

@@ -11,11 +11,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -59,97 +56,104 @@ public class ReportActivity extends Activity {
             String zipCode = getZipCode(lat, lng);
             latLng = new LatLng(lat, lng);
             String tVContent = "Zip Code: " + zipCode + "\nLat/Lng: " + roundDouble(latLng.latitude) + "/" + roundDouble(latLng.longitude);
-            TextView tVLocation = (TextView) findViewById(R.id.Report_tV_Location);
+            TextView tVLocation = (TextView) findViewById(R.id.RP_TV_Location);
             tVLocation.setText(tVContent);
         }
     }
     private void handleWidgets(){
-        handleButtons();
-        handleGenderRadioGroup();
-        handleSizeRadioGroup();
+        SetButtonListeners();
         handleCleanSeekBar();
-        handleTrafficRadioGroup();
-        handleAccessRadioGroup();
         handleTimeSeekBar();
         handleCheckBoxes();
+        InitializeGenderRGTL();
+        InitializeSizeRGTL();
+        InitializeTrafficRGTL();
+        InitializeAccessRGTL();
     }
 
-    private void handleButtons(){
-        Button cancelReport = (Button) findViewById(R.id.Report_b_Cancel);
-        Button sendReport = (Button) findViewById(R.id.Report_b_Send);
+    private void InitializeGenderRGTL() {
+        RadioGroupTableLayout RGTL = (RadioGroupTableLayout) findViewById(R.id.RP_RGTL_Gender);
+        RGTL.setCheckedRadioButtonId(R.id.RP_RB_Inclusive);
+    }
+    private void InitializeSizeRGTL() {
+        RadioGroupTableLayout RGTL = (RadioGroupTableLayout) findViewById(R.id.RP_RGTL_Size);
+        RGTL.setCheckedRadioButtonId(R.id.RP_RB_SizeNA);
+    }
+    private void InitializeTrafficRGTL() {
+        RadioGroupTableLayout RGTL = (RadioGroupTableLayout) findViewById(R.id.RP_RGTL_Traffic);
+        RGTL.setCheckedRadioButtonId(R.id.RP_RB_TrafficNA);
+    }
+    private void InitializeAccessRGTL() {
+        RadioGroupTableLayout RGTL = (RadioGroupTableLayout) findViewById(R.id.RP_RGTL_Access);
+        RGTL.setCheckedRadioButtonId(R.id.RP_RB_AccessNA);
+    }
 
+    private void SetButtonListeners(){
+        SetButtonCancelListener();
+        SetButtonSendListener();
+    }
+    private void SetButtonCancelListener(){
+        Button cancelReport = (Button) findViewById(R.id.RP_B_Cancel);
         cancelReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-
-                setResult(RESULT_CANCELED, intent);
-                //toastThis("Cancelling Report");
+                setResult(RESULT_CANCELED);
                 finish();
-                overridePendingTransition(0, 0);
             }
         });
-        sendReport.setOnClickListener(new View.OnClickListener() {
+    }
+    private void SetButtonSendListener(){
+        Button B = (Button) findViewById(R.id.RP_B_Send);
+        B.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                RadioGroupTableLayout RGTL_Gender = (RadioGroupTableLayout) findViewById(R.id.RP_RGTL_Gender);
+                RadioGroupTableLayout RGTL_Size = (RadioGroupTableLayout) findViewById(R.id.RP_RGTL_Size);
+                SeekBar SB_Clean = (SeekBar) findViewById(R.id.RP_SB_Clean);
+                RadioGroupTableLayout RGTL_Traffic = (RadioGroupTableLayout) findViewById(R.id.RP_RGTL_Traffic);
+                RadioGroupTableLayout RGTL_Access = (RadioGroupTableLayout) findViewById(R.id.RP_RGTL_Access);
+                SeekBar SB_Time = (SeekBar) findViewById(R.id.RP_SB_Time);
+
+                int ValueGender = GetRadioButtonValue(RGTL_Gender);
+                int ValueSize = GetRadioButtonValue(RGTL_Size);
+                int ValueClean = SB_Clean.getProgress();
+                int ValueTraffic = GetRadioButtonValue(RGTL_Traffic);
+                int ValueAccess = GetRadioButtonValue(RGTL_Access);
+                int ValueTime = SB_Time.getProgress();
+
                 Intent intent = new Intent();
+                StringBuilder Features = new StringBuilder("");
+                Features.append(roundDouble(latLng.latitude)).append(",").append(roundDouble(latLng.longitude)).append(":");
+                Features.append(String.valueOf(ValueGender)).append(":");
+                Features.append(String.valueOf(ValueSize)).append(":");
+                Features.append(String.valueOf(ValueClean)).append(":");
+                Features.append(String.valueOf(ValueTraffic)).append(":");
+                Features.append(String.valueOf(ValueAccess)).append(":");
+                Features.append(String.valueOf(ValueTime)).append(":");
 
-                setResult(RESULT_OK, intent);
-
-                StringBuilder features = new StringBuilder("");
-                features.append(roundDouble(latLng.latitude)).append(",").append(roundDouble(latLng.longitude)).append(":");
-                features.append(gender).append(":");
-                features.append(size).append(":");
-                features.append(clean).append(":");
-                features.append(traffic).append(":");
-                features.append(access).append(":");
-                features.append(time).append(":");
-
-                if( amenities.size() == 0 ){
+                if (amenities.size() == 0) {
                     amenities.add(0);
                 }
 
-                for( int i = 0; i < amenities.size() - 1; ++i ){
-                    features.append(amenities.get(i)).append(",");
+                for (int i = 0; i < amenities.size() - 1; ++i) {
+                    Features.append(amenities.get(i)).append(",");
                 }
+                Features.append(amenities.get(amenities.size() - 1)).append(":");
+                Features.append(getCurrentDate());
+                intent.putExtra("features", Features.toString());
 
-                Calendar c = Calendar.getInstance();
-                features.append(amenities.get(amenities.size() - 1)).append(":");
-                features.append(getCurrentDate());
-
-                String featuresString = features.toString();
-                intent.putExtra("features", featuresString);
+                setResult(RESULT_OK, intent);
                 finish();
-                overridePendingTransition(0, 0);
             }
         });
     }
-    private void handleGenderRadioGroup(){
-        final RadioGroup genderGroup = (RadioGroup) findViewById(R.id.Report_rG_Gender);
-        genderGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                RadioButton checkedButton = (RadioButton) findViewById(checkedId);
-                gender = genderGroup.indexOfChild(checkedButton);
-            }
-        });
-    }
-    private void handleSizeRadioGroup(){
-        final RadioGroup sizeGroup = (RadioGroup) findViewById(R.id.Report_rG_Size);
-        sizeGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                RadioButton checkedButton = (RadioButton) findViewById(checkedId);
-                size = sizeGroup.indexOfChild(checkedButton);
-            }
-        });
-    }
+
     private void handleCleanSeekBar(){
-        final SeekBar cleanSeekBar = (SeekBar) findViewById(R.id.Report_sB_Clean);
-        cleanSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        final SeekBar SB = (SeekBar) findViewById(R.id.RP_SB_Clean);
+        SB.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                TextView tVClean = (TextView) findViewById(R.id.Report_tV_Clean);
+                TextView tVClean = (TextView) findViewById(R.id.RP_TV_Clean);
                 tVClean.setText(possibleClean.get(progress));
                 clean = progress;
             }
@@ -162,11 +166,11 @@ public class ReportActivity extends Activity {
         });
     }
     private void handleTimeSeekBar(){
-        final SeekBar cleanSeekBar = (SeekBar) findViewById(R.id.Report_sB_Time);
-        cleanSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        final SeekBar SB = (SeekBar) findViewById(R.id.RP_SB_Time);
+        SB.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                TextView tVTime = (TextView) findViewById(R.id.Report_tV_Time);
+                TextView tVTime = (TextView) findViewById(R.id.RP_TV_Time);
                 tVTime.setText(possibleClosing.get(progress));
                 time = progress;
             }
@@ -178,30 +182,10 @@ public class ReportActivity extends Activity {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
     }
-    private void handleTrafficRadioGroup(){
-        final RadioGroup trafficGroup = (RadioGroup) findViewById(R.id.Report_rG_Traffic);
-        trafficGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                RadioButton checkedButton = (RadioButton) findViewById(checkedId);
-                traffic = trafficGroup.indexOfChild(checkedButton);
-            }
-        });
-    }
-    private void handleAccessRadioGroup(){
-        final RadioGroup accessGroup = (RadioGroup) findViewById(R.id.Report_rG_Access);
-        accessGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                RadioButton checkedButton = (RadioButton) findViewById(checkedId);
-                access = accessGroup.indexOfChild(checkedButton);
-            }
-        });
-    }
     private void handleCheckBoxes(){
-        CheckBox diaper = (CheckBox) findViewById(R.id.Report_cB_Diaper);
-        CheckBox condom = (CheckBox) findViewById(R.id.Report_cB_Condom);
-        CheckBox tampon = (CheckBox) findViewById(R.id.Report_cB_Tampon);
+        CheckBox diaper = (CheckBox) findViewById(R.id.RP_CB_Diaper);
+        CheckBox condom = (CheckBox) findViewById(R.id.RP_CB_Condom);
+        CheckBox tampon = (CheckBox) findViewById(R.id.RP_CB_Tampon);
 
         diaper.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -256,11 +240,6 @@ public class ReportActivity extends Activity {
         return dF.format(n);
     }
 
-    private void toastThis(String message){
-        Toast.makeText(thisContext,
-                message,
-                Toast.LENGTH_LONG).show();
-    }
     private String getCurrentDate(){
         Calendar c = Calendar.getInstance();
 
@@ -271,6 +250,43 @@ public class ReportActivity extends Activity {
         String date = String.valueOf(month) + "/" + String.valueOf(day) + "/" + String.valueOf(year);
 
         return date;
+    }
+
+    private int GetRadioButtonValue(RadioGroupTableLayout RGTL) {
+        int ID = RGTL.getCheckedRadioButtonId();
+        int value = -1;
+        switch (ID) {
+            case R.id.RP_RB_SizeNA:
+                value = 4;
+                break;
+            case R.id.RP_RB_Family:
+            case R.id.RP_RB_Large:
+            case R.id.RP_RB_TrafficNA:
+            case R.id.RP_RB_AccessNA:
+                value = 3;
+                break;
+            case R.id.RP_RB_Female:
+            case R.id.RP_RB_Medium:
+            case R.id.RP_RB_High:
+            case R.id.RP_RB_Private:
+                value = 2;
+                break;
+            case R.id.RP_RB_Male:
+            case R.id.RP_RB_Small:
+            case R.id.RP_RB_Some:
+            case R.id.RP_RB_Customer:
+                value = 1;
+                break;
+            case R.id.RP_RB_Inclusive:
+            case R.id.RP_RB_Single:
+            case R.id.RP_RB_Low:
+            case R.id.RP_RB_Public:
+                value = 0;
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 
     @Override

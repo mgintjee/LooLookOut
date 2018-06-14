@@ -1,22 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.happybananastudio.loolookout.MainActivity"
-    android:background="@android:color/holo_orange_dark">
+    android:background="@color/BlueSea">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/TV_MainMapHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/footer"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:background="@color/BlueSea"
+        android:text="@string/app_name"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
+        android:id="@+id/LL_MapLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/LL_MapFooter"
+        android:layout_below="@+id/TV_MainMapHeader">
+
+        <fragment
+            xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/main_map"
+            android:id="@+id/M_MainMap"
             class="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -24,94 +37,105 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/LL_MapFooter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:id="@+id/footer"
-        android:orientation="vertical"
-        android:background="@color/dull_blue">
+        android:background="@color/GoldSky"
+        android:orientation="horizontal">
 
-        <LinearLayout
+        <Button
+            android:id="@+id/B_FilterSettings"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:backgroundTint="@color/OrangeSun"
+            android:text="@string/Filter"
+            android:textAllCaps="false"
+            android:textSize="12sp" />
 
-            <ImageButton
-                android:id="@+id/iBFilter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
-                android:background="@color/dull_blue"
-                android:scaleType="fitXY"
-                app:srcCompat="@drawable/filter" />
+        <Button
+            android:id="@+id/Spacer_0"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/OrangeSun"
+            android:text="@string/Filter"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:visibility="gone" />
 
-            <ImageButton
-                android:id="@+id/Main_FooterSpacer0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
-                android:background="@color/dull_blue"
-                android:scaleType="fitXY"
-                android:visibility="invisible"
-                app:srcCompat="@drawable/add_toilet" />
+        <Button
+            android:id="@+id/B_UpdateRestroom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/OrangeSun"
+            android:text="@string/Update"
+            android:textAllCaps="false"
+            android:textSize="12sp" />
 
-            <ImageButton
-                android:id="@+id/iBComplain"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
-                android:background="@color/dull_blue"
-                android:scaleType="fitXY"
-                app:srcCompat="@drawable/report_toilet" />
+        <Button
+            android:id="@+id/B_NewRestroomCancel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/OrangeSun"
+            android:text="@string/NewCancel"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:visibility="gone" />
 
-            <ImageButton
-                android:id="@+id/Main_FooterSpacer1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
-                android:background="@color/colorAccent"
-                android:scaleType="fitXY"
-                android:visibility="invisible"
-                app:srcCompat="@drawable/add_toilet" />
+        <Button
+            android:id="@+id/B_RefreshMap"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/OrangeSun"
+            android:text="@string/Refresh"
+            android:textAllCaps="false"
+            android:textSize="12sp" />
 
-            <ImageButton
-                android:id="@+id/iBReport"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
-                android:background="@color/dull_blue"
-                android:scaleType="fitXY"
-                app:srcCompat="@drawable/add_toilet" />
+        <Button
+            android:id="@+id/B_NewRestroom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/OrangeSun"
+            android:text="@string/New"
+            android:textAllCaps="false"
+            android:textSize="12sp" />
 
-            <ImageButton
-                android:id="@+id/Main_FooterSpacer2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
-                android:background="@color/colorAccent"
-                android:scaleType="fitXY"
-                android:visibility="invisible"
-                app:srcCompat="@drawable/add_toilet" />
+        <Button
+            android:id="@+id/B_NewRestroomContinue"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/OrangeSun"
+            android:text="@string/NewContinue"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:visibility="gone" />
 
-            <ImageButton
-                android:id="@+id/iBAbout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
-                android:background="@color/dull_blue"
-                android:scaleType="fitXY"
-                app:srcCompat="@drawable/about" />
+        <Button
+            android:id="@+id/B_About"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/OrangeSun"
+            android:text="@string/About"
+            android:textAllCaps="false"
+            android:textSize="12sp" />
 
-        </LinearLayout>
-
+        <Button
+            android:id="@+id/Spacer_1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/OrangeSun"
+            android:text="@string/About"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:visibility="gone" />
     </LinearLayout>
-
-
 </RelativeLayout>

@@ -30,21 +30,14 @@
         </activity>
         <activity
             android:name=".FiltersActivity"
-            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
             android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ReportActivity"
-            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
             android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".AboutActivity"
-            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity
-            android:name=".LocationActivity"
             android:screenOrientation="portrait">
         </activity>
     </application>

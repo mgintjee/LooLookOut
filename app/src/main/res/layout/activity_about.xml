@@ -2,13 +2,26 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/BlueSea">
+
+    <TextView
+        android:id="@+id/AB_TV_Header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="@string/About"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/lL_Footer"
-        android:layout_alignParentTop="true">
+        android:layout_height="match_parent"
+        android:layout_above="@id/FS_LL_Footer"
+        android:layout_below="@+id/AB_TV_Header">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -17,61 +30,99 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/aboutAppHeader" />
+                android:layout_alignParentTop="true"
+                android:text="@string/aboutAppHeader"
+                android:textAlignment="textStart"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/aboutApp" />
+                android:text="@string/aboutApp"
+                android:textColor="@color/black" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/aboutTeamHeader" />
+                android:text="@string/aboutTeamHeader"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/aboutTeam" />
+                android:text="@string/aboutTeam"
+                android:textColor="@color/black" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/plannedFeaturesHeader" />
+                android:text="@string/plannedFeaturesHeader"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/plannedFeatures" />
+                android:text="@string/plannedFeatures"
+                android:textColor="@color/black" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/changelogHeader" />
+                android:text="@string/changelogHeader"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/changelog" />
+                android:text="@string/changelog"
+                android:textColor="@color/black" />
 
         </LinearLayout>
 
     </ScrollView>
 
     <LinearLayout
-        android:id="@+id/lL_Footer"
+        android:id="@+id/FS_LL_Footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:background="@color/GoldSky">
 
         <Button
-            android:id="@+id/About_Minimize"
+            android:id="@+id/AB_Footer_Spacer_0"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@color/dull_blue"
+            android:text="@string/minimize"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/About_Minimize"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/OrangeSun"
             android:text="@string/minimize" />
+
+        <Button
+            android:id="@+id/AB_Footer_Spacer_1"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/dull_blue"
+            android:text="@string/minimize"
+            android:visibility="invisible" />
     </LinearLayout>
 </RelativeLayout>

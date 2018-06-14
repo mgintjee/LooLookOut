@@ -4,6 +4,16 @@
 
     <string name="my_google_maps_key">AIzaSyAen9NzPj2xYZtK1EUVBBpEmMIQLq5S85M"</string>
 
+    <string name="Filter">Filter Settings</string>
+    <string name="Update">New Complaint</string>
+    <string name="NewCancel">Cancel Report</string>
+    <string name="Refresh">Refresh Map</string>
+    <string name="New">New Report</string>
+    <string name="NewContinue">Continue Report</string>
+    <string name="About">About this App</string>
+    <string name="RestroomInformation">Restroom Features</string>
+
+    <string name="minimize">Minimize</string>
     <string name="gender">Gender</string>
     <string name="size">Size</string>
     <string name="traffic">Traffic</string>
@@ -20,9 +30,9 @@
     <string name="cannot_find">I cannot find it</string>
     <string name="look_more">I will look some more</string>
 
-    <string name="minimize">Minimize Window</string>
-    <string name="clear">Reset Filters</string>
-    <string name="save">Close &amp; Apply</string>
+    <string name="Cancel">Cancel Changes</string>
+    <string name="Reset">Reset To Default</string>
+    <string name="Apply">Apply Changes</string>
 
     <string name="none">N/A</string>
 
@@ -34,10 +44,10 @@
     <string name="single">Single (T=1)</string>
     <string name="small">Small (T&lt;3)</string>
     <string name="medium">Medium (T&lt;6)</string>
-    <string name="large">Large (6&lt;T)</string>
+    <string name="large">Large (T&lt;=6)</string>
 
-    <string name="clean">Clean</string>
-    <string name="time">Closing Time</string>
+    <string name="clean">Clean:</string>
+    <string name="time">Closing Time:</string>
 
     <string name="dirty">Dirty</string>
 
@@ -57,15 +67,14 @@
     <string name="optional">Optional Features:</string>
 
     <string name="location">Your Location</string>
-    <string name="cancel">Cancel Submission</string>
-    <string name="send">Send Submission</string>
+    <string name="cancel">Cancel Report</string>
+    <string name="send">Send Report</string>
 
     <string name="edit">Edit Restroom</string>
     <string name="report">Report Restroom</string>
 
     <string name="aboutAppHeader">
-
-        \n> About This App:
+        > About This App:
     </string>
     <string name="aboutApp">
         -> This application was made by UC Irvine students for the course CS 125 - Next Gen Search Systems.
@@ -106,7 +115,16 @@
         \n> Changelog:
     </string>
     <string name="changelog">
-        -> V 1.09 (Current):
+        -> V 2.01 (Current):
+        \n—> Changed the color and theme of the app
+        \n—> Added A refresh button on the main map
+        \n—> Changed All buttons to Text buttons for consistency
+        \n—> When adding a new report for a restroom it creates a marker on the main map rather than creating a map only for the new report
+        \n—> Added headers to all of the activities
+        \n—> Removed toasts
+        \n—> Reformatted the restroom filters/features radio buttons to take up less space
+
+        \n\n-> V 1.09:
         \n—> Has default static filter of 1000 meters for the restrooms.
         \n——> Planning on letting users modify this filter value.
 
