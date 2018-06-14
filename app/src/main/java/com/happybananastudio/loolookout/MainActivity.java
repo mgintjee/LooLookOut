@@ -140,6 +140,7 @@ public class MainActivity extends AppCompatActivity
     // Main App Methods
     private void loadPostalRestrooms() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        SelectedMarker = null;
         lat = mLastKnownLocation.getLatitude();
         lng = mLastKnownLocation.getLongitude();
 
@@ -281,7 +282,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void SetButtonListenerFilter() {
-        Button B = (Button) findViewById(R.id.B_FilterSettings);
+        Button B = findViewById(R.id.B_FilterSettings);
         B.setOnClickListener(new View.OnClickListener() {
                                  @Override
                                  public void onClick(View v) {
@@ -293,7 +294,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void SetButtonListenerUpdate() {
-        Button B_Update = (Button) findViewById(R.id.B_UpdateRestroom);
+        Button B_Update = findViewById(R.id.B_UpdateRestroom);
         B_Update.setOnClickListener(new View.OnClickListener() {
                                  @Override
                                  public void onClick(View v) {
@@ -304,15 +305,15 @@ public class MainActivity extends AppCompatActivity
         );
     }
     private void SetButtonListenerCancel() {
-        final Button B_New = (Button) findViewById(R.id.B_NewRestroom);
-        final Button B_Update = (Button) findViewById(R.id.B_UpdateRestroom);
-        final Button B_Filter = (Button) findViewById(R.id.B_FilterSettings);
-        final Button B_About= (Button) findViewById(R.id.B_About);
+        final Button B_New = findViewById(R.id.B_NewRestroom);
+        final Button B_Update = findViewById(R.id.B_UpdateRestroom);
+        final Button B_Filter = findViewById(R.id.B_FilterSettings);
+        final Button B_About= findViewById(R.id.B_About);
 
-        final Button B_Cancel = (Button) findViewById(R.id.B_NewRestroomCancel);
-        final Button B_Continue = (Button) findViewById(R.id.B_NewRestroomContinue);
-        final Button Spacer_0 = (Button) findViewById(R.id.Spacer_0);
-        final Button Spacer_1 = (Button) findViewById(R.id.Spacer_1);
+        final Button B_Cancel = findViewById(R.id.B_NewRestroomCancel);
+        final Button B_Continue = findViewById(R.id.B_NewRestroomContinue);
+        final Button Spacer_0 = findViewById(R.id.Spacer_0);
+        final Button Spacer_1 = findViewById(R.id.Spacer_1);
 
         B_Cancel.setOnClickListener(new View.OnClickListener() {
                                  @Override
@@ -338,7 +339,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void SetButtonListenerRefresh() {
-        Button B = (Button) findViewById(R.id.B_RefreshMap);
+        Button B = findViewById(R.id.B_RefreshMap);
         B.setOnClickListener(new View.OnClickListener() {
                                  @Override
                                  public void onClick(View v) {
@@ -350,15 +351,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void SetButtonListenerNew() {
-        final Button B_New = (Button) findViewById(R.id.B_NewRestroom);
-        final Button B_Update = (Button) findViewById(R.id.B_UpdateRestroom);
-        final Button B_Filter = (Button) findViewById(R.id.B_FilterSettings);
-        final Button B_About= (Button) findViewById(R.id.B_About);
+        final Button B_New = findViewById(R.id.B_NewRestroom);
+        final Button B_Update = findViewById(R.id.B_UpdateRestroom);
+        final Button B_Filter = findViewById(R.id.B_FilterSettings);
+        final Button B_About= findViewById(R.id.B_About);
 
-        final Button B_Cancel = (Button) findViewById(R.id.B_NewRestroomCancel);
-        final Button B_Continue = (Button) findViewById(R.id.B_NewRestroomContinue);
-        final Button Spacer_0 = (Button) findViewById(R.id.Spacer_0);
-        final Button Spacer_1 = (Button) findViewById(R.id.Spacer_1);
+        final Button B_Cancel = findViewById(R.id.B_NewRestroomCancel);
+        final Button B_Continue = findViewById(R.id.B_NewRestroomContinue);
+        final Button Spacer_0 = findViewById(R.id.Spacer_0);
+        final Button Spacer_1 = findViewById(R.id.Spacer_1);
 
         B_New.setOnClickListener(new View.OnClickListener() {
                                  @Override
@@ -375,13 +376,16 @@ public class MainActivity extends AppCompatActivity
                                      Spacer_1.setVisibility(View.INVISIBLE);
 
                                      ReportLocation();
+                                     if( SelectedMarker != null) {
+                                         SelectedMarker = null;
+                                     }
                                  }
                              }
         );
     }
 
     private void SetButtonListenerNewContinue() {
-        Button B = (Button) findViewById(R.id.B_NewRestroomContinue);
+        Button B = findViewById(R.id.B_NewRestroomContinue);
         B.setOnClickListener(new View.OnClickListener() {
                                  @Override
                                  public void onClick(View v) {
@@ -393,7 +397,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void SetButtonListenerAbout() {
-        Button B = (Button) findViewById(R.id.B_About);
+        Button B = findViewById(R.id.B_About);
         B.setOnClickListener(new View.OnClickListener() {
                                  @Override
                                  public void onClick(View v) {
@@ -581,42 +585,47 @@ public class MainActivity extends AppCompatActivity
         if (mLastKnownLocation != null) {
             if (SelectedMarker != null) {
                 infoWindowData info = (infoWindowData) SelectedMarker.getTag();
-                double targetLat = info.getLatLng().latitude;
-                double targetLng = info.getLatLng().longitude;
-                double centerLat = mLastKnownLocation.getLatitude();
-                double centerLng = mLastKnownLocation.getLongitude();
-                String gender = String.valueOf(possibleGender.indexOf(info.getGender()));
-                float distance = distanceBetween2LatLngs(centerLat, centerLng, targetLat, targetLng);
-                final String targetKey = (targetLat + "," + targetLng + ":" + gender).replace(".", "_");
+                if( info != null ) {
+                    double targetLat = info.getLatLng().latitude;
+                    double targetLng = info.getLatLng().longitude;
+                    double centerLat = mLastKnownLocation.getLatitude();
+                    double centerLng = mLastKnownLocation.getLongitude();
+                    String gender = String.valueOf(possibleGender.indexOf(info.getGender()));
+                    float distance = distanceBetween2LatLngs(centerLat, centerLng, targetLat, targetLng);
+                    final String targetKey = (targetLat + "," + targetLng + ":" + gender).replace(".", "_");
 
-                if (distance < MAX_DISTANCE) {
-                    mDatabase.child(zipCode).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
-                            for (DataSnapshot dsChild : dsChildData) {
-                                try {
-                                    String key = String.valueOf(dsChild.getKey());
-                                    String value = String.valueOf(dsChild.getValue(String.class));
-                                    String[] valueFeatures = value.split(":");
-                                    int reportCount = Integer.valueOf(valueFeatures[valueFeatures.length - 1]) - 1;
-                                    if (key.equals(targetKey) && SelectedMarker != null && newComplaint) {
-                                        dialogConfirmCancelNewComplaint(targetKey, reportCount, valueFeatures);
-                                        break;
+                    if (distance < MAX_DISTANCE) {
+                        mDatabase.child(zipCode).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
+                                for (DataSnapshot dsChild : dsChildData) {
+                                    try {
+                                        String key = String.valueOf(dsChild.getKey());
+                                        String value = String.valueOf(dsChild.getValue(String.class));
+                                        String[] valueFeatures = value.split(":");
+                                        int reportCount = Integer.valueOf(valueFeatures[valueFeatures.length - 1]) - 1;
+                                        if (key.equals(targetKey) && SelectedMarker != null && newComplaint) {
+                                            dialogConfirmCancelNewComplaint(targetKey, reportCount, valueFeatures);
+                                            break;
+                                        }
+                                    } catch (DatabaseException e) {
+                                        Log.d("Database Exception", e.getMessage());
+                                        Log.d("Debug", "Error Handling DB, try again later.");
                                     }
-                                } catch (DatabaseException e) {
-                                    Log.d("Database Exception", e.getMessage());
-                                    Log.d("Debug","Error Handling DB, try again later.");
                                 }
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                        }
-                    });
-                } else {
-                    dialogError("File Complaint Error", "You are over " + String.valueOf(distance) + " meters away from the restroom you wish to file a complaint on.\nYou need to be within " + String.valueOf(MAX_DISTANCE) + " meters of a restroom to file a complaint on it.");
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }
+                        });
+                    } else {
+                        dialogError("File Complaint Error", "You are over " + String.valueOf(distance) + " meters away from the restroom you wish to file a complaint on.\nYou need to be within " + String.valueOf(MAX_DISTANCE) + " meters of a restroom to file a complaint on it.");
+                    }
+                }
+                else{
+                    dialogError("Select Error", "Ran into issues loading the selected marker\'s info...");
                 }
             } else {
                 dialogError("No Selected Restroom", "There is no selected Restroom to file a complaint about.\nPlease select a Restroom to file a complaint on.");
@@ -1110,15 +1119,15 @@ public class MainActivity extends AppCompatActivity
                     newReport = true;
                     handleRestroomReport(features);
 
-                    final Button B_New = (Button) findViewById(R.id.B_NewRestroom);
-                    final Button B_Update = (Button) findViewById(R.id.B_UpdateRestroom);
-                    final Button B_Filter = (Button) findViewById(R.id.B_FilterSettings);
-                    final Button B_About= (Button) findViewById(R.id.B_About);
+                    final Button B_New = findViewById(R.id.B_NewRestroom);
+                    final Button B_Update = findViewById(R.id.B_UpdateRestroom);
+                    final Button B_Filter = findViewById(R.id.B_FilterSettings);
+                    final Button B_About= findViewById(R.id.B_About);
 
-                    final Button B_Cancel = (Button) findViewById(R.id.B_NewRestroomCancel);
-                    final Button B_Continue = (Button) findViewById(R.id.B_NewRestroomContinue);
-                    final Button Spacer_0 = (Button) findViewById(R.id.Spacer_0);
-                    final Button Spacer_1 = (Button) findViewById(R.id.Spacer_1);
+                    final Button B_Cancel = findViewById(R.id.B_NewRestroomCancel);
+                    final Button B_Continue = findViewById(R.id.B_NewRestroomContinue);
+                    final Button Spacer_0 = findViewById(R.id.Spacer_0);
+                    final Button Spacer_1 = findViewById(R.id.Spacer_1);
 
                     B_New.setVisibility(View.VISIBLE);
                     B_Update.setVisibility(View.VISIBLE);

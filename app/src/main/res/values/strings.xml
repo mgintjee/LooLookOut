@@ -115,7 +115,10 @@
         \n> Changelog:
     </string>
     <string name="changelog">
-        -> V 2.01 (Current):
+        -> V 2.02 (Current):
+        \n—> Fixed issue where user can refresh map and it will try to access a dead marker
+
+        \n\n-> V 2.01:
         \n—> Changed the color and theme of the app
         \n—> Added A refresh button on the main map
         \n—> Changed All buttons to Text buttons for consistency
