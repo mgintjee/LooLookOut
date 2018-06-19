@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -18,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -30,6 +32,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -75,10 +79,12 @@ public class MainActivity extends AppCompatActivity
     private Marker SelectedMarker = null;
     private Marker ReportMarker = null;
     private LatLng ReportLatLng = null;
+    double InitialReportLat, InitialReportLng;
     private boolean newReport = false, newComplaint = false;
 
 
     private int MAX_DISTANCE = 25;
+    private float ReportDistance = MAX_DISTANCE;
     private int FILTER_DISTANCE = 1000;
     private Context thisContext = this;
     private String zipCode;
@@ -150,19 +156,25 @@ public class MainActivity extends AppCompatActivity
         if (mDatabase != null && !zipCode.equals("")) {
             getRestroomInfoFromDB();
 
-            if(ReportMarker!=null){
-                double NewLat = mLastKnownLocation.getLatitude();
-                double NewLng = mLastKnownLocation.getLongitude();
-                LatLng NewLatLng = new LatLng(NewLat, NewLng);
+            if (ReportMarker != null) {
+                InitialReportLat = mLastKnownLocation.getLatitude();
+                InitialReportLng = mLastKnownLocation.getLongitude();
+                ReportLatLng = new LatLng(InitialReportLat, InitialReportLng);
                 MarkerOptions newMarker = new MarkerOptions()
-                        .position(NewLatLng)
+                        .position(ReportLatLng)
                         .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("pin")))
                         .draggable(true);
+                CircleOptions newCircle = new CircleOptions()
+                        .center(new LatLng(InitialReportLat, InitialReportLng))
+                        .radius(MAX_DISTANCE)
+                        .strokeColor(Color.BLACK)
+                        .fillColor(Color.TRANSPARENT);
                 ReportMarker = mMap.addMarker(newMarker);
+                Circle circle = mMap.addCircle(newCircle);
             }
 
         } else {
-            Log.d("Debug","Error Loading Restrooms...Try Again Later");
+            Log.d("Debug", "Error Loading Restrooms...Try Again Later");
         }
     }
 
@@ -183,10 +195,10 @@ public class MainActivity extends AppCompatActivity
                         }
                     } catch (DatabaseException e) {
                         Log.d("Database Exception", e.getMessage());
-                        Log.d("Debug","Error Handling DB, try again later.");
+                        Log.d("Debug", "Error Handling DB, try again later.");
                     }
                 }
-                Log.d("Debug","Found " + Integer.toString(c) + " Restroom(s) for ZipCode: " + zipCode + " within " + String.valueOf(FILTER_DISTANCE) + " meters.");
+                Log.d("Debug", "Found " + Integer.toString(c) + " Restroom(s) for ZipCode: " + zipCode + " within " + String.valueOf(FILTER_DISTANCE) + " meters.");
             }
 
             @Override
@@ -219,10 +231,10 @@ public class MainActivity extends AppCompatActivity
                                     loadPostalRestrooms();
                                 }
                             } else {
-                                Log.d("Debug","Error loading last known location");
+                                Log.d("Debug", "Error loading last known location");
                             }
                         } else {
-                            Log.d("Debug","Current location is null. Using defaults.");
+                            Log.d("Debug", "Current location is null. Using defaults.");
                             mMap.moveCamera(CameraUpdateFactory
                                     .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -296,19 +308,20 @@ public class MainActivity extends AppCompatActivity
     private void SetButtonListenerUpdate() {
         Button B_Update = findViewById(R.id.B_UpdateRestroom);
         B_Update.setOnClickListener(new View.OnClickListener() {
-                                 @Override
-                                 public void onClick(View v) {
-                                     Log.d("Debug", "Update");
-                                     StartUpdateActivity();
-                                 }
-                             }
+                                        @Override
+                                        public void onClick(View v) {
+                                            Log.d("Debug", "Update");
+                                            StartUpdateActivity();
+                                        }
+                                    }
         );
     }
+
     private void SetButtonListenerCancel() {
         final Button B_New = findViewById(R.id.B_NewRestroom);
         final Button B_Update = findViewById(R.id.B_UpdateRestroom);
         final Button B_Filter = findViewById(R.id.B_FilterSettings);
-        final Button B_About= findViewById(R.id.B_About);
+        final Button B_About = findViewById(R.id.B_About);
 
         final Button B_Cancel = findViewById(R.id.B_NewRestroomCancel);
         final Button B_Continue = findViewById(R.id.B_NewRestroomContinue);
@@ -316,25 +329,26 @@ public class MainActivity extends AppCompatActivity
         final Button Spacer_1 = findViewById(R.id.Spacer_1);
 
         B_Cancel.setOnClickListener(new View.OnClickListener() {
-                                 @Override
-                                 public void onClick(View v) {
-                                     Log.d("Debug", "Cancel");
-                                     B_New.setVisibility(View.VISIBLE);
-                                     B_Update.setVisibility(View.VISIBLE);
-                                     B_Filter.setVisibility(View.VISIBLE);
-                                     B_About.setVisibility(View.VISIBLE);
+                                        @Override
+                                        public void onClick(View v) {
+                                            Log.d("Debug", "Cancel");
+                                            B_New.setVisibility(View.VISIBLE);
+                                            B_Update.setVisibility(View.VISIBLE);
+                                            B_Filter.setVisibility(View.VISIBLE);
+                                            B_About.setVisibility(View.VISIBLE);
 
-                                     B_Cancel.setVisibility(View.GONE);
-                                     B_Continue.setVisibility(View.GONE);
-                                     Spacer_0.setVisibility(View.GONE);
-                                     Spacer_1.setVisibility(View.GONE);
+                                            B_Cancel.setVisibility(View.GONE);
+                                            B_Continue.setVisibility(View.GONE);
+                                            Spacer_0.setVisibility(View.GONE);
+                                            Spacer_1.setVisibility(View.GONE);
 
-                                     if(ReportMarker != null){
-                                         ReportMarker.remove();
-                                         ReportMarker = null;
-                                     }
-                                 }
-                             }
+                                            if (ReportMarker != null) {
+                                                ReportMarker.remove();
+                                                ReportMarker = null;
+                                                loadPostalRestrooms();
+                                            }
+                                        }
+                                    }
         );
     }
 
@@ -354,7 +368,7 @@ public class MainActivity extends AppCompatActivity
         final Button B_New = findViewById(R.id.B_NewRestroom);
         final Button B_Update = findViewById(R.id.B_UpdateRestroom);
         final Button B_Filter = findViewById(R.id.B_FilterSettings);
-        final Button B_About= findViewById(R.id.B_About);
+        final Button B_About = findViewById(R.id.B_About);
 
         final Button B_Cancel = findViewById(R.id.B_NewRestroomCancel);
         final Button B_Continue = findViewById(R.id.B_NewRestroomContinue);
@@ -362,26 +376,34 @@ public class MainActivity extends AppCompatActivity
         final Button Spacer_1 = findViewById(R.id.Spacer_1);
 
         B_New.setOnClickListener(new View.OnClickListener() {
-                                 @Override
-                                 public void onClick(View v) {
-                                     Log.d("Debug", "New");
-                                     B_New.setVisibility(View.GONE);
-                                     B_Update.setVisibility(View.GONE);
-                                     B_Filter.setVisibility(View.GONE);
-                                     B_About.setVisibility(View.GONE);
+                                     @Override
+                                     public void onClick(View v) {
+                                         ReportLocation();
+                                         toastThis("Press and Hold to Drag The Restroom Somewhere Within The Circle");
+                                         if (SelectedMarker != null) {
+                                             SelectedMarker = null;
+                                         }
 
-                                     B_Cancel.setVisibility(View.VISIBLE);
-                                     B_Continue.setVisibility(View.VISIBLE);
-                                     Spacer_0.setVisibility(View.INVISIBLE);
-                                     Spacer_1.setVisibility(View.INVISIBLE);
+                                         Log.d("Debug", "New");
+                                         B_New.setVisibility(View.GONE);
+                                         B_Update.setVisibility(View.GONE);
+                                         B_Filter.setVisibility(View.GONE);
+                                         B_About.setVisibility(View.GONE);
 
-                                     ReportLocation();
-                                     if( SelectedMarker != null) {
-                                         SelectedMarker = null;
+                                         B_Cancel.setVisibility(View.VISIBLE);
+                                         B_Continue.setVisibility(View.VISIBLE);
+                                         Spacer_0.setVisibility(View.INVISIBLE);
+                                         Spacer_1.setVisibility(View.INVISIBLE);
+
                                      }
                                  }
-                             }
         );
+    }
+
+    private void toastThis(String message) {
+        Toast.makeText(thisContext,
+                message,
+                Toast.LENGTH_LONG).show();
     }
 
     private void SetButtonListenerNewContinue() {
@@ -513,19 +535,24 @@ public class MainActivity extends AppCompatActivity
         Marker m = mMap.addMarker(newMarker);
         m.setTag(info);
     }
-    private void setMarkerDragListener(){
+
+    private void setMarkerDragListener() {
         mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             @Override
-            public void onMarkerDragStart(Marker marker) {}
+            public void onMarkerDragStart(Marker marker) {
+            }
 
             @Override
-            public void onMarkerDrag(Marker marker) {}
+            public void onMarkerDrag(Marker marker) {
+            }
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
+                Log.d("Previous LatLng", ReportLatLng.toString());
                 ReportLatLng = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
-                Log.d("New Info",new LatLng(marker.getPosition().latitude, marker.getPosition().longitude).toString());
-                Log.d("Should Be Heere",ReportLatLng.toString());
+                ReportDistance = distanceBetween2LatLngs(ReportLatLng.latitude, ReportLatLng.longitude, InitialReportLat, InitialReportLng);
+                Log.d("Distance", String.valueOf(ReportDistance));
+                Log.d("Drag End LatLng", ReportLatLng.toString());
             }
         });
     }
@@ -534,25 +561,37 @@ public class MainActivity extends AppCompatActivity
     private void ReportLocation() {
         loadPostalRestrooms();
         if (mLastKnownLocation != null && !zipCode.equals("")) {
-            Log.d("Debug","Creating New Restroom");
+            Log.d("Debug", "Creating New Restroom");
             AddReportMarker();
+            loadPostalRestrooms();
         }
     }
 
-    private void StartReportActivity(){
-        loadPostalRestrooms();
-        zipCode = getZipCode(ReportLatLng.latitude, ReportLatLng.longitude);
-        if (mLastKnownLocation != null && !zipCode.equals("")) {
-            Log.d("Debug","Submitting New Restroom");
-            Intent intent = new Intent(thisContext, ReportActivity.class);
-            intent.putExtra("lat", ReportLatLng.latitude);
-            intent.putExtra("lng", ReportLatLng.longitude);
-            startActivityForResult(intent, REPORT_ACTIVITY);
+    private void StartReportActivity() {
+        //loadPostalRestrooms();
+        if (ReportLatLng != null) {
+            zipCode = getZipCode(ReportLatLng.latitude, ReportLatLng.longitude);
+            if (!zipCode.equals("")) {
+                if (ReportDistance < MAX_DISTANCE) {
+                    Log.d("Debug", "Submitting New Restroom");
+                    Log.d("Start Activity LatLng", ReportLatLng.toString());
+                    Intent intent = new Intent(thisContext, ReportActivity.class);
+                    intent.putExtra("lat", ReportLatLng.latitude);
+                    intent.putExtra("lng", ReportLatLng.longitude);
+                    startActivityForResult(intent, REPORT_ACTIVITY);
+                } else {
+                    dialogError("New Report Error", "Distance Away Is Over The Limit: " + String.valueOf(MAX_DISTANCE) + " m");
+                }
+            } else {
+                dialogError("New Report Error", "Error Getting Current Location Or Zipcode. Try Again Later.");
+            }
+        } else {
+            dialogError("New Report Error", "Error Getting Current Location Or Zipcode. Try Again Later.");
         }
     }
 
-    private void AddReportMarker(){
-        if( ReportMarker == null ){
+    private void AddReportMarker() {
+        if (ReportMarker == null) {
             double NewLat = mLastKnownLocation.getLatitude();
             double NewLng = mLastKnownLocation.getLongitude();
             ReportLatLng = new LatLng(NewLat, NewLng);
@@ -566,26 +605,26 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startAboutActivity() {
-        Log.d("Debug","About this App");
+        Log.d("Debug", "About this App");
         Intent intent = new Intent(thisContext, AboutActivity.class);
         startActivityForResult(intent, ABOUT_ACTIVITY);
     }
 
     private void startFiltersActivity() {
-        Log.d("Debug","Editing Filters");
+        Log.d("Debug", "Editing Filters");
         Intent intent = new Intent(thisContext, FiltersActivity.class);
         intent.putExtra("filters", filters);
         startActivityForResult(intent, FILTERS_ACTIVITY);
     }
 
     private void StartUpdateActivity() {
-        Log.d("Debug","Filing Complaint");
+        Log.d("Debug", "Filing Complaint");
         newComplaint = true;
         getDeviceLocation(false);
         if (mLastKnownLocation != null) {
             if (SelectedMarker != null) {
                 infoWindowData info = (infoWindowData) SelectedMarker.getTag();
-                if( info != null ) {
+                if (info != null) {
                     double targetLat = info.getLatLng().latitude;
                     double targetLng = info.getLatLng().longitude;
                     double centerLat = mLastKnownLocation.getLatitude();
@@ -623,8 +662,7 @@ public class MainActivity extends AppCompatActivity
                     } else {
                         dialogError("File Complaint Error", "You are over " + String.valueOf(distance) + " meters away from the restroom you wish to file a complaint on.\nYou need to be within " + String.valueOf(MAX_DISTANCE) + " meters of a restroom to file a complaint on it.");
                     }
-                }
-                else{
+                } else {
                     dialogError("Select Error", "Ran into issues loading the selected marker\'s info...");
                 }
             } else {
@@ -678,7 +716,7 @@ public class MainActivity extends AppCompatActivity
                             }
                         } catch (DatabaseException e) {
                             Log.d("Database Exception", e.getMessage());
-                            Log.d("Debug","Error Handling DB, try again later.");
+                            Log.d("Debug", "Error Handling DB, try again later.");
                         }
                     }
 
@@ -773,14 +811,14 @@ public class MainActivity extends AppCompatActivity
                 .setPositiveButton(R.string.new_one, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         handleAbsentRestroom(newKey + ":" + features);
-                        Log.d("Debug","Sending Report for New Restroom");
+                        Log.d("Debug", "Sending Report for New Restroom");
                     }
                 })
                 .setNegativeButton(R.string.exist_one, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         String newOldFeatures = handleExistingFeatures(oldFeatureString, features);
                         handleNearbyZipCodesForSubmit(oldKey, newOldFeatures + ":" + reportCount);
-                        Log.d("Debug","Sending Report for Existing Restroom");
+                        Log.d("Debug", "Sending Report for Existing Restroom");
                     }
                 })
                 .setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -827,7 +865,7 @@ public class MainActivity extends AppCompatActivity
                 })
                 .setNegativeButton(R.string.look_more, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Log.d("Debug","Cancelling Complaint for Restroom");
+                        Log.d("Debug", "Cancelling Complaint for Restroom");
                     }
                 })
                 .show();
@@ -849,7 +887,7 @@ public class MainActivity extends AppCompatActivity
                         mDatabase.child(zipCode).child(key).setValue(value);
                     }
                     getDeviceLocation(true);
-                    Log.d("Debug","Sending Complaint for Restroom");
+                    Log.d("Debug", "Sending Complaint for Restroom");
                 }
             }
 
@@ -1122,7 +1160,7 @@ public class MainActivity extends AppCompatActivity
                     final Button B_New = findViewById(R.id.B_NewRestroom);
                     final Button B_Update = findViewById(R.id.B_UpdateRestroom);
                     final Button B_Filter = findViewById(R.id.B_FilterSettings);
-                    final Button B_About= findViewById(R.id.B_About);
+                    final Button B_About = findViewById(R.id.B_About);
 
                     final Button B_Cancel = findViewById(R.id.B_NewRestroomCancel);
                     final Button B_Continue = findViewById(R.id.B_NewRestroomContinue);
@@ -1139,7 +1177,7 @@ public class MainActivity extends AppCompatActivity
                     Spacer_0.setVisibility(View.GONE);
                     Spacer_1.setVisibility(View.GONE);
 
-                    if(ReportMarker != null){
+                    if (ReportMarker != null) {
                         ReportMarker.remove();
                         ReportMarker = null;
                     }

@@ -115,7 +115,11 @@
         \n> Changelog:
     </string>
     <string name="changelog">
-        -> V 2.02 (Current):
+        -> V 2.03 (Current):
+        \n—> Added a circle around the initial report location so that the user can correctly identify the location within a 30 m radius
+        \n—> Added a toast to inform the user how to use the dragging feature when submitting a report
+
+        \n\n-> V 2.02:
         \n—> Fixed issue where user can refresh map and it will try to access a dead marker
 
         \n\n-> V 2.01:
